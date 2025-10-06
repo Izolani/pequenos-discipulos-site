@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teste de Voz</title>
+</head>
+<body>
+    <h1>Teste de Síntese de Voz</h1>
+    <button onclick="testarVoz()">🎤 Testar Voz</button>
+    <div id="resultado"></div>
+
+    <script>
+        function testarVoz() {
+            const resultado = document.getElementById('resultado');
+            
+            if (!('speechSynthesis' in window)) {
+                resultado.innerHTML = '❌ SpeechSynthesis não suportado';
+                return;
+            }
+            
+            const voices = speechSynthesis.getVoices();
+            resultado.innerHTML = `📊 Vozes encontradas: ${voices.length}<br>`;
+            
+            voices.forEach((voice, i) => {
+                resultado.innerHTML += `[${i}] ${voice.name} (${voice.lang})<br>`;
+            });
+            
+            const utterance = new SpeechSynthesisUtterance('Olá, este é um teste de voz');
+            utterance.onstart = () => resultado.innerHTML += '✅ Voz iniciada!<br>';
+            utterance.onend = () => resultado.innerHTML += '✅ Voz finalizada!<br>';
+            utterance.onerror = (e) => resultado.innerHTML += `❌ Erro: ${e.error}<br>`;
+            
+            speechSynthesis.speak(utterance);
+        }
+    </script>
+</body>
+</html>
