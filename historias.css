@@ -1,0 +1,558 @@
+/* ===== ESTILOS PARA HISTÓRIAS BÍBLICAS ===== */
+
+.historias-main {
+    padding: 20px 0;
+    min-height: calc(100vh - 100px);
+}
+
+.historias-intro {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.historias-intro h2 {
+    color: #2E8B57;
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+}
+
+.intro-features {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.feature {
+    background: #f0f8f0;
+    color: #2E8B57;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.filtros-categoria {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.filtros-categoria h3 {
+    color: #2E8B57;
+    margin-bottom: 20px;
+}
+
+.categoria-buttons {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.btn-categoria {
+    background: white;
+    color: #2E8B57;
+    border: 2px solid #2E8B57;
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    font-family: 'Comic Neue', cursive;
+}
+
+.btn-categoria:hover,
+.btn-categoria.active {
+    background: #2E8B57;
+    color: white;
+}
+
+.historias-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.historia-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    border: 3px solid transparent;
+}
+
+.historia-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    border-color: #FFD700;
+}
+
+.historia-image {
+    position: relative;
+    height: 200px;
+    background: linear-gradient(135deg, #87CEEB, #98FB98);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.image-placeholder {
+    font-size: 4rem;
+    animation: float 3s ease-in-out infinite;
+}
+
+.play-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.historia-card:hover .play-overlay {
+    opacity: 1;
+}
+
+.btn-play {
+    background: rgba(255,255,255,0.9);
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.btn-play:hover {
+    transform: scale(1.1);
+}
+
+.historia-content {
+    padding: 25px;
+}
+
+.historia-content h3 {
+    color: #2E8B57;
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.historia-content p {
+    color: #666;
+    line-height: 1.5;
+    margin-bottom: 15px;
+}
+
+.historia-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.duracao, .idade {
+    background: #f0f8f0;
+    color: #2E8B57;
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.categoria-tag {
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: white;
+}
+
+.categoria-tag.jesus {
+    background: #4CAF50;
+}
+
+.categoria-tag.antigo {
+    background: #FF9800;
+}
+
+.categoria-tag.milagres {
+    background: #9C27B0;
+}
+
+.categoria-tag.natal {
+    background: #F44336;
+}
+
+.historia-versiculo {
+    background: #f8f9fa;
+    padding: 10px;
+    border-radius: 10px;
+    border-left: 4px solid #FFD700;
+    margin-bottom: 15px;
+    font-style: italic;
+    color: #555;
+    font-size: 0.9rem;
+}
+
+.btn-ouvir {
+    background: linear-gradient(45deg, #4CAF50, #45a049);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    font-family: 'Comic Neue', cursive;
+}
+
+.btn-ouvir:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+}
+
+/* Modal da História */
+.modal-historia {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+}
+
+.modal-content-historia {
+    background: white;
+    border-radius: 20px;
+    max-width: 800px;
+    width: 90%;
+    max-height: 90%;
+    overflow-y: auto;
+    animation: modalEntrar 0.5s ease-out;
+}
+
+.modal-header-historia {
+    background: #2E8B57;
+    color: white;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 20px 20px 0 0;
+}
+
+.modal-header-historia h2 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.btn-fechar {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    transition: background 0.3s ease;
+}
+
+.btn-fechar:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.modal-body-historia {
+    padding: 30px;
+}
+
+.ilustracao-area {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.ilustracao-principal {
+    background: linear-gradient(135deg, #87CEEB, #98FB98);
+    border-radius: 15px;
+    padding: 40px;
+    margin-bottom: 20px;
+}
+
+.image-placeholder-grande {
+    font-size: 6rem;
+    animation: float 3s ease-in-out infinite;
+}
+
+.texto-area {
+    background: #f8f9fa;
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 30px;
+    border-left: 5px solid #FFD700;
+}
+
+.texto-historia {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    color: #333;
+}
+
+.audio-controles {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.btn-audio {
+    background: #2E8B57;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Comic Neue', cursive;
+}
+
+.btn-audio:hover {
+    background: #236B47;
+    transform: translateY(-2px);
+}
+
+.progress-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 200px;
+}
+
+.progress-bar {
+    flex: 1;
+    height: 8px;
+    background: #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+    cursor: pointer !important;
+    position: relative;
+    transition: transform 0.3s ease;
+}
+
+.progress-bar:hover {
+    transform: scaleY(1.2);
+}
+
+.progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(76, 175, 80, 0.1);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.progress-bar:hover::after {
+    opacity: 1;
+}
+
+.progress {
+    height: 100%;
+    background: #2E8B57;
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.tempo {
+    font-size: 0.9rem;
+    color: #666;
+    min-width: 80px;
+}
+
+.navegacao-historia {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.btn-nav {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Comic Neue', cursive;
+}
+
+.btn-nav:hover:not(:disabled) {
+    background: #45a049;
+    transform: translateY(-2px);
+}
+
+.btn-nav:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.pagina-atual {
+    font-weight: 600;
+    color: #2E8B57;
+    font-size: 1.1rem;
+}
+
+/* ===== CORREÇÃO DO SISTEMA DE ÁUDIO ===== */
+
+.visualizador-container {
+    background: linear-gradient(135deg, #f0f8f0, #e8f5e8);
+    border-radius: 15px;
+    padding: 20px;
+    margin: 20px 0;
+    text-align: center;
+    border: 2px solid #4CAF50;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.visualizador-audio {
+    display: flex;
+    justify-content: center;
+    align-items: end;
+    height: 60px;
+    margin: 15px 0;
+    gap: 2px;
+}
+
+.barra-audio {
+    width: 4px;
+    background: linear-gradient(to top, #4CAF50, #81C784);
+    border-radius: 2px;
+    transition: height 0.1s ease;
+    animation: pulseAudio 0.8s ease-in-out infinite alternate;
+}
+
+.audio-status {
+    color: #2E8B57;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin: 10px 0 0 0;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.btn-volume {
+    background: #FF9800 !important;
+}
+
+.btn-volume:hover {
+    background: #F57C00 !important;
+}
+
+.btn-volume.muted {
+    background: #9E9E9E !important;
+}
+
+/* Animações */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulseAudio {
+    0% { 
+        height: 10px; 
+        opacity: 0.6; 
+    }
+    100% { 
+        height: 40px; 
+        opacity: 1; 
+    }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+/* Estados do áudio */
+.audio-tocando .btn-audio {
+    background: #4CAF50 !important;
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.5);
+}
+
+.audio-pausado .btn-audio {
+    background: #FF9800 !important;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .historias-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .historia-card {
+        margin: 0 10px;
+    }
+    
+    .modal-content-historia {
+        width: 95%;
+        margin: 20px;
+    }
+    
+    .modal-body-historia {
+        padding: 20px;
+    }
+    
+    .audio-controles {
+        flex-direction: column;
+    }
+    
+    .navegacao-historia {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .categoria-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .intro-features {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+@keyframes modalEntrar {
+    from {
+        opacity: 0;
+        transform: scale(0.7) translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}

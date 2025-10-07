@@ -1,0 +1,683 @@
+/* ===== ESTILOS PARA JOGOS ===== */
+
+/* Página de Jogos */
+.games-section {
+    padding: 40px 0;
+    min-height: calc(100vh - 100px);
+}
+
+.section-subtitle {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 40px;
+}
+
+.games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.game-card {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    border: 3px solid transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.game-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    transition: left 0.5s;
+}
+
+.game-card:hover::before {
+    left: 100%;
+}
+
+.game-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    border-color: #FFD700;
+}
+
+.game-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    animation: float 3s ease-in-out infinite;
+}
+
+.game-card h3 {
+    font-size: 1.5rem;
+    color: #2E8B57;
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+.game-card p {
+    color: #666;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.game-difficulty {
+    margin-bottom: 20px;
+}
+
+.difficulty {
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: white;
+}
+
+.difficulty.easy {
+    background: #4CAF50;
+}
+
+.difficulty.medium {
+    background: #FF9800;
+}
+
+.difficulty.hard {
+    background: #F44336;
+}
+
+.btn-jogar {
+    background: linear-gradient(45deg, #4CAF50, #45a049);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+}
+
+.btn-jogar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+}
+
+.btn-voltar, .btn-novo-jogo {
+    background: #2E8B57;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-left: 10px;
+}
+
+.btn-voltar:hover, .btn-novo-jogo:hover {
+    background: #236B47;
+    transform: translateY(-2px);
+}
+
+/* ===== JOGO DA FORCA ===== */
+
+.game-main {
+    padding: 20px 0;
+    min-height: calc(100vh - 100px);
+}
+
+.game-controls {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.forca-container {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 40px;
+    margin-bottom: 40px;
+    align-items: start;
+}
+
+.forca-drawing {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.forca-svg {
+    max-width: 100%;
+    height: auto;
+}
+
+.parte-corpo {
+    animation: desenharParte 0.5s ease-in-out;
+}
+
+@keyframes desenharParte {
+    from {
+        stroke-dasharray: 100;
+        stroke-dashoffset: 100;
+    }
+    to {
+        stroke-dasharray: 100;
+        stroke-dashoffset: 0;
+    }
+}
+
+.palavra-area {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+.categoria-hint {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.categoria-hint h3 {
+    color: #2E8B57;
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+}
+
+.dica {
+    color: #666;
+    font-style: italic;
+    font-size: 1rem;
+}
+
+.palavra-display {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 30px 0;
+}
+
+.letra-box {
+    width: 50px;
+    height: 60px;
+    border: 3px solid #2E8B57;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2E8B57;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.letra-box.revelada {
+    background: #4CAF50;
+    color: white;
+    transform: scale(1.1);
+    animation: revelarLetra 0.5s ease-in-out;
+}
+
+@keyframes revelarLetra {
+    0% { transform: scale(1) rotateY(0deg); }
+    50% { transform: scale(1.2) rotateY(90deg); }
+    100% { transform: scale(1.1) rotateY(0deg); }
+}
+
+.espaco {
+    width: 20px;
+    height: 60px;
+    border: none;
+    background: transparent;
+}
+
+.game-stats {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px 0;
+}
+
+.stat {
+    text-align: center;
+}
+
+.stat-label {
+    display: block;
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2E8B57;
+}
+
+/* Informações do Nível */
+.nivel-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+    padding: 15px;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 10px;
+    border-left: 4px solid #2E8B57;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.nivel-atual {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #2E8B57;
+}
+
+.max-erros {
+    color: #666;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* Seletor de Nível */
+.nivel-selector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: 20px;
+}
+
+.nivel-selector label {
+    color: #2E8B57;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.nivel-selector select {
+    padding: 8px 15px;
+    border: 2px solid #2E8B57;
+    border-radius: 20px;
+    background: white;
+    color: #2E8B57;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.nivel-selector select:hover {
+    background: #f0f8f0;
+    transform: translateY(-1px);
+}
+
+.nivel-selector select:focus {
+    outline: none;
+    box-shadow: 0 0 10px rgba(46, 139, 87, 0.3);
+}
+
+/* ===== TECLADO VIRTUAL ===== */
+
+.teclado-virtual {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.teclado-virtual h4 {
+    text-align: center;
+    color: #2E8B57;
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+}
+
+.teclado-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+    gap: 10px;
+    max-width: 650px;
+    margin: 0 auto;
+}
+
+.tecla {
+    width: 50px;
+    height: 50px;
+    border: 2px solid #2E8B57;
+    border-radius: 10px;
+    background: white;
+    color: #2E8B57;
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tecla:hover {
+    background: #2E8B57;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(46, 139, 87, 0.3);
+}
+
+.tecla.usada {
+    background: #ccc;
+    color: #666;
+    cursor: not-allowed;
+    border-color: #ccc;
+}
+
+.tecla.correta {
+    background: #4CAF50;
+    color: white;
+    border-color: #4CAF50;
+    animation: acerto 0.5s ease-in-out;
+}
+
+.tecla.incorreta {
+    background: #F44336;
+    color: white;
+    border-color: #F44336;
+    animation: erro 0.5s ease-in-out;
+}
+
+@keyframes acerto {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+@keyframes erro {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* ===== LETRAS ERRADAS ===== */
+
+.letras-erradas {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.letras-erradas h4 {
+    color: #F44336;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+}
+
+.letras-erradas-display {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    min-height: 40px;
+    align-items: center;
+}
+
+.letra-errada {
+    padding: 8px 15px;
+    background: linear-gradient(45deg, #F44336, #d32f2f);
+    color: white;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 1rem;
+    animation: aparecer 0.5s ease-in-out;
+    box-shadow: 0 2px 10px rgba(244, 67, 54, 0.3);
+}
+
+@keyframes aparecer {
+    from {
+        opacity: 0;
+        transform: scale(0) rotate(180deg);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+    }
+}
+
+/* ===== MODAL DE RESULTADO ===== */
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    animation: modalEntrar 0.5s ease-out;
+    border: 3px solid #FFD700;
+}
+
+@keyframes modalEntrar {
+    from {
+        opacity: 0;
+        transform: scale(0.7) translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.modal-header h2 {
+    color: #2E8B57;
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.resultado-emoji {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    animation: pulsar 1s ease-in-out infinite;
+}
+
+@keyframes pulsar {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.modal-body p {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.palavra-revelada {
+    font-size: 1.5rem;
+    color: #2E8B57;
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+.pontuacao-final {
+    font-size: 1.3rem;
+    color: #FF6347;
+    margin-bottom: 30px;
+    font-weight: 700;
+}
+
+.modal-footer {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-modal {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 150px;
+}
+
+.btn-modal:first-child {
+    background: linear-gradient(45deg, #4CAF50, #45a049);
+    color: white;
+}
+
+.btn-modal:last-child {
+    background: linear-gradient(45deg, #2E8B57, #236B47);
+    color: white;
+}
+
+.btn-modal:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* ===== RESPONSIVIDADE ===== */
+
+@media (max-width: 768px) {
+    .forca-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .teclado-grid {
+        grid-template-columns: repeat(6, 1fr);
+        max-width: 100%;
+    }
+    
+    .tecla {
+        width: 45px;
+        height: 45px;
+        font-size: 1rem;
+    }
+    
+    .letra-box {
+        width: 40px;
+        height: 50px;
+        font-size: 1.5rem;
+    }
+    
+    .game-controls {
+        flex-direction: column;
+        gap: 10px;
+        align-items: stretch;
+    }
+    
+    .nivel-selector {
+        margin-left: 0;
+        justify-content: center;
+    }
+    
+    .modal-footer {
+        flex-direction: column;
+    }
+    
+    .btn-modal {
+        min-width: auto;
+        width: 100%;
+    }
+    
+    .nivel-info {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+    
+    .games-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .game-card {
+        padding: 25px 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .tecla {
+        width: 40px;
+        height: 40px;
+        font-size: 0.9rem;
+    }
+    
+    .letra-box {
+        width: 35px;
+        height: 45px;
+        font-size: 1.3rem;
+    }
+    
+    .modal-content {
+        padding: 30px 20px;
+    }
+    
+    .resultado-emoji {
+        font-size: 3rem;
+    }
+    
+    .modal-header h2 {
+        font-size: 2rem;
+    }
+}
+
+/* ===== ANIMAÇÕES ADICIONAIS ===== */
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes cair {
+    to {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+/* ===== EFEITOS ESPECIAIS ===== */
+
+.confete {
+    position: fixed;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    z-index: 9999;
+    animation: cair 3s linear forwards;
+}
