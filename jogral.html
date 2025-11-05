@@ -1,636 +1,691 @@
-// Sistema de áudio para Louvor Infantil
-class LouvorPlayer {
-    constructor() {
-        this.musicaAtual = null;
-        this.tocando = false;
-        this.volume = 0.7;
-        this.velocidade = 1;
-        this.playlist = [];
-        this.indiceAtual = 0;
-        this.modoKaraoke = false;
-        this.tempoAtual = 0;
-        this.duracao = 0;
-        
-        this.init();
-    }
-    
-    init() {
-        console.log('🎵 Sistema de Louvor inicializado');
-        this.criarAudioContext();
-        this.configurarEventos();
-    }
-    
-    criarAudioContext() {
-        // Criar contexto de áudio para efeitos
-        try {
-            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            console.log('🎧 Contexto de áudio criado');
-        } catch (error) {
-            console.warn('⚠️ Contexto de áudio não suportado:', error);
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎭 Jogral Infantil - Igreja Cristo Vive</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-    }
-    
-    configurarEventos() {
-        // Event listeners para controles
-        document.addEventListener('DOMContentLoaded', () => {
-            this.atualizarInterface();
-        });
-    }
-    
-    selecionarMusica(musicaId) {
-        console.log('�� Selecionando música:', musicaId);
-        
-        if (!musicasData[musicaId]) {
-            console.error('❌ Música não encontrada:', musicaId);
-            return;
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+            min-height: 100vh;
+            color: #333;
         }
-        
-        this.musicaAtual = musicasData[musicaId];
-        this.indiceAtual = Object.keys(musicasData).indexOf(musicaId);
-        
-        // Atualizar interface
-        document.getElementById('musica-atual').textContent = this.musicaAtual.titulo;
-        document.getElementById('artista-atual').textContent = this.musicaAtual.artista;
-        document.getElementById('tempo-total').textContent = this.musicaAtual.duracao;
-        document.querySelector('.album-placeholder').textContent = this.musicaAtual.icon;
-        
-        // Reset do player
-        this.tempoAtual = 0;
-        this.atualizarProgresso();
-        
-        console.log('✅ Música selecionada:', this.musicaAtual.titulo);
-    }
-    
-    tocarMusica(musicaId) {
-        this.selecionarMusica(musicaId);
-        this.togglePlayPause();
-    }
-    
-    togglePlayPause() {
-        if (!this.musicaAtual) {
-            this.mostrarAlerta('Selecione uma música primeiro!', 'info');
-            return;
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
         }
-        
-        this.tocando = !this.tocando;
-        
-        const btnPlayPause = document.getElementById('btn-play-pause');
-        const btnPlayMain = document.getElementById('btn-play-main');
-        
-        if (this.tocando) {
-            btnPlayPause.textContent = '⏸️';
-            btnPlayMain.textContent = '⏸️';
-            console.log('▶️ Reproduzindo:', this.musicaAtual.titulo);
-            this.simularReproducao();
-            this.mostrarNotificacao(`Tocando: ${this.musicaAtual.titulo}`);
-        } else {
-            btnPlayPause.textContent = '▶️';
-            btnPlayMain.textContent = '▶️';
-            console.log('⏸️ Pausado');
-            this.mostrarNotificacao('Música pausada');
+
+        .header-jogral {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
-        
-        this.atualizarInterface();
-    }
-    
-    simularReproducao() {
-        if (!this.tocando || !this.musicaAtual) return;
-        
-        const duracao = this.converterDuracaoParaSegundos(this.musicaAtual.duracao);
-        
-        this.intervaloReproducao = setInterval(() => {
-            if (!this.tocando) {
-                clearInterval(this.intervaloReproducao);
-                return;
+
+        .header-jogral h1 {
+            font-size: 2.5em;
+            color: #4a5568;
+            margin-bottom: 10px;
+        }
+
+        .header-jogral p {
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .localizacao {
+            background: #ff6b6b;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            display: inline-block;
+            font-weight: bold;
+        }
+
+        .btn-voltar {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+            margin-bottom: 20px;
+        }
+
+        .btn-voltar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+
+        .jogral-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .jogral-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+        }
+
+        .jogral-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            border-color: #ff6b6b;
+        }
+
+        .jogral-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .jogral-icone {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            color: white;
+        }
+
+        .jogral-info h3 {
+            color: #4a5568;
+            margin-bottom: 5px;
+            font-size: 1.4em;
+        }
+
+        .jogral-info p {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .jogral-content {
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .btn-ver {
+            width: 100%;
+            background: linear-gradient(135deg, #28a745, #1e7e34);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1em;
+        }
+
+        .btn-ver:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+
+        .jogral-ativo {
+            display: none;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .jogral-ativo.show {
+            display: block;
+        }
+
+        .btn-fechar {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            float: right;
+            margin-bottom: 20px;
+        }
+
+        .btn-fechar:hover {
+            background: #ee5a52;
+        }
+
+        .jogral-texto {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #ff6b6b;
+            line-height: 1.8;
+            font-size: 1.1em;
+        }
+
+        .personagem {
+            font-weight: bold;
+            color: #ff6b6b;
+            margin-top: 15px;
+        }
+
+        .instrucao {
+            font-style: italic;
+            color: #666;
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
             }
-            
-            this.tempoAtual += this.velocidade;
-            this.atualizarProgresso();
-            
-            if (this.tempoAtual >= duracao) {
-                this.finalizarMusica();
+
+            .header-jogral h1 {
+                font-size: 2em;
             }
-        }, 1000);
-    }
-    
-    finalizarMusica() {
-        clearInterval(this.intervaloReproducao);
-        this.tocando = false;
-        this.tempoAtual = 0;
-        
-        // Reset dos botões
-        document.getElementById('btn-play-pause').textContent = '▶️';
-        document.getElementById('btn-play-main').textContent = '▶️';
-        
-        this.atualizarProgresso();
-        this.mostrarNotificacao('Música finalizada');
-        
-        console.log('🏁 Música finalizada');
-        
-        // Auto-play próxima música (opcional)
-        setTimeout(() => {
-            this.proximaMusica();
-        }, 1000);
-    }
-    
-    musicaAnterior() {
-        const musicas = Object.keys(musicasData);
-        if (musicas.length === 0) return;
-        
-        this.indiceAtual = this.indiceAtual > 0 ? this.indiceAtual - 1 : musicas.length - 1;
-        const novaMusica = musicas[this.indiceAtual];
-        
-        this.tocarMusica(novaMusica);
-        console.log('⏮️ Música anterior:', novaMusica);
-    }
-    
-    proximaMusica() {
-        const musicas = Object.keys(musicasData);
-        if (musicas.length === 0) return;
-        
-        this.indiceAtual = this.indiceAtual < musicas.length - 1 ? this.indiceAtual + 1 : 0;
-        const novaMusica = musicas[this.indiceAtual];
-        
-        this.tocarMusica(novaMusica);
-        console.log('⏭️ Próxima música:', novaMusica);
-    }
-    
-    abrirKaraoke() {
-        if (!this.musicaAtual) {
-            this.mostrarAlerta('Selecione uma música primeiro!', 'warning');
-            return;
+
+            .jogral-grid {
+                grid-template-columns: 1fr;
+            }
         }
-        
-        this.modoKaraoke = !this.modoKaraoke;
-        
-        if (this.modoKaraoke) {
-            this.mostrarModalKaraoke();
-        } else {
-            this.fecharModalKaraoke();
-        }
-    }
-    
-    mostrarModalKaraoke() {
-        const modalHTML = `
-            <div id="modal-karaoke" class="modal-karaoke">
-                <div class="modal-content-karaoke">
-                    <div class="karaoke-header">
-                        <h2>🎤 Modo Karaokê</h2>
-                        <button onclick="louvorPlayer.fecharModalKaraoke()">❌</button>
-                    </div>
-                    <div class="karaoke-body">
-                        <div class="musica-info-karaoke">
-                            <h3>${this.musicaAtual.titulo}</h3>
-                            <p>${this.musicaAtual.artista}</p>
-                        </div>
-                        <div class="letra-karaoke">
-                            <div class="letra-linha ativa">🎵 A letra apareceria aqui sincronizada</div>
-                            <div class="letra-linha">🎵 Com destaque na linha atual</div>
-                            <div class="letra-linha">🎵 Perfeito para cantar junto!</div>
-                        </div>
-                        <div class="karaoke-controles">
-                            <button onclick="louvorPlayer.togglePlayPause()">
-                                ${this.tocando ? '⏸️' : '▶️'} ${this.tocando ? 'Pausar' : 'Tocar'}
-                            </button>
-                            <button onclick="louvorPlayer.ajustarTom(-1)">🔽 Tom</button>
-                            <button onclick="louvorPlayer.ajustarTom(1)">🔼 Tom</button>
-                        </div>
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Cabeçalho -->
+        <header class="header-jogral">
+            <a href="../index.html" class="btn-voltar">
+                ⬅️ Voltar ao Início
+            </a>
+            <h1>🎭 Jogral Infantil</h1>
+            <p>Apresentações teatrais bíblicas para crianças!</p>
+            <div class="localizacao">📍 Igreja Cristo Vive de Paracambi/RJ</div>
+        </header>
+
+        <!-- Área do Jogral Ativo -->
+        <div id="jogral-ativo" class="jogral-ativo">
+            <button class="btn-fechar" onclick="fecharJogral()">✕ Fechar</button>
+            <div id="conteudo-jogral"></div>
+        </div>
+
+        <!-- Grid de Jograis -->
+        <div class="jogral-grid">
+            <!-- Natal -->
+            <div class="jogral-card">
+                <div class="jogral-header">
+                    <div class="jogral-icone">🎄</div>
+                    <div class="jogral-info">
+                        <h3>O Nascimento de Jesus</h3>
+                        <p>Jogral de Natal • 6-8 crianças</p>
                     </div>
                 </div>
+                <div class="jogral-content">
+                    <p><strong>Tema:</strong> Celebração do nascimento de Cristo</p>
+                    <p><strong>Personagens:</strong> Narrador, Maria, José, Anjo, Pastores, Reis Magos</p>
+                    <p><strong>Duração:</strong> 8-10 minutos</p>
+                </div>
+                <button class="btn-ver" onclick="abrirJogral('natal')">👁️ Ver Jogral Completo</button>
             </div>
-        `;
-        
-        document.body.insertAdjacentHTML('beforeend', modalHTML);
-        console.log('🎤 Modal karaokê aberto');
-    }
-    
-    fecharModalKaraoke() {
-        const modal = document.getElementById('modal-karaoke');
-        if (modal) {
-            modal.remove();
-            this.modoKaraoke = false;
-            console.log('🎤 Modal karaokê fechado');
-        }
-    }
-    
-    buscarTempo(event) {
-        if (!this.musicaAtual) return;
-        
-        const progressBar = event.currentTarget;
-        const rect = progressBar.getBoundingClientRect();
-        const clickX = event.clientX - rect.left;
-        const percentage = (clickX / rect.width) * 100;
-        
-        const duracao = this.converterDuracaoParaSegundos(this.musicaAtual.duracao);
-        this.tempoAtual = (percentage / 100) * duracao;
-        
-        this.atualizarProgresso();
-        console.log('⏯️ Tempo alterado para:', this.formatarTempo(this.tempoAtual));
-    }
-    
-    atualizarProgresso() {
-        if (!this.musicaAtual) return;
-        
-        const duracao = this.converterDuracaoParaSegundos(this.musicaAtual.duracao);
-        const percentage = (this.tempoAtual / duracao) * 100;
-        
-        // Atualizar barra de progresso
-        const progress = document.getElementById('progress-main');
-        if (progress) {
-            progress.style.width = Math.min(percentage, 100) + '%';
-        }
-        
-        // Atualizar tempo atual
-        const tempoAtualElement = document.getElementById('tempo-atual');
-        if (tempoAtualElement) {
-            tempoAtualElement.textContent = this.formatarTempo(this.tempoAtual);
-        }
-    }
-    
-    converterDuracaoParaSegundos(duracao) {
-        const partes = duracao.split(':');
-        return parseInt(partes[0]) * 60 + parseInt(partes[1]);
-    }
-    
-    formatarTempo(segundos) {
-        const minutos = Math.floor(segundos / 60);
-        const segs = Math.floor(segundos % 60);
-        return `${minutos}:${segs.toString().padStart(2, '0')}`;
-    }
-    
-    ajustarTom(direcao) {
-        console.log('🎵 Ajustando tom:', direcao > 0 ? 'Subindo' : 'Descendo');
-        this.mostrarNotificacao(`Tom ${direcao > 0 ? 'aumentado' : 'diminuído'}`);
-    }
-    
-    mostrarNotificacao(mensagem) {
-        // Criar notificação temporária
-        const notificacao = document.createElement('div');
-        notificacao.className = 'notificacao-louvor';
-        notificacao.textContent = mensagem;
-        notificacao.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #4CAF50;
-            color: white;
-            padding: 15px 20px;
-            border-radius: 10px;
-            z-index: 1000;
-            animation: slideIn 0.3s ease-out;
-        `;
-        
-        document.body.appendChild(notificacao);
-        
-        setTimeout(() => {
-            notificacao.style.animation = 'slideOut 0.3s ease-out';
-            setTimeout(() => notificacao.remove(), 300);
-        }, 2000);
-    }
-    
-    mostrarAlerta(mensagem, tipo = 'info') {
-        const icones = {
-            info: 'ℹ️',
-            warning: '⚠️',
-            error: '❌',
-            success: '✅'
-        };
-        
-        const cores = {
-            info: '#2196F3',
-            warning: '#FF9800',
-            error: '#F44336',
-            success: '#4CAF50'
-        };
-        
-        const alerta = document.createElement('div');
-        alerta.innerHTML = `
-            <div style="
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                background: white;
-                padding: 30px;
-                border-radius: 15px;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-                z-index: 1001;
-                text-align: center;
-                max-width: 400px;
-                border-left: 5px solid ${cores[tipo]};
-            ">
-                <div style="font-size: 2rem; margin-bottom: 15px;">${icones[tipo]}</div>
-                <p style="margin: 0; color: #333; font-size: 1.1rem;">${mensagem}</p>
-                <button onclick="this.parentElement.parentElement.remove()" style="
-                    background: ${cores[tipo]};
-                    color: white;
-                    border: none;
-                    padding: 10px 20px;
-                    border-radius: 20px;
-                    margin-top: 20px;
-                    cursor: pointer;
-                    font-family: 'Comic Neue', cursive;
-                ">OK</button>
+
+            <!-- Páscoa -->
+            <div class="jogral-card">
+                <div class="jogral-header">
+                    <div class="jogral-icone">✝️</div>
+                    <div class="jogral-info">
+                        <h3>A Ressurreição</h3>
+                        <p>Jogral de Páscoa • 5-7 crianças</p>
+                    </div>
+                </div>
+                <div class="jogral-content">
+                    <p><strong>Tema:</strong> Morte e ressurreição de Jesus</p>
+                    <p><strong>Personagens:</strong> Narrador, Jesus, Discípulos, Mulheres, Anjo</p>
+                    <p><strong>Duração:</strong> 7-9 minutos</p>
+                </div>
+                <button class="btn-ver" onclick="abrirJogral('pascoa')">👁️ Ver Jogral Completo</button>
             </div>
-        `;
-        
-        document.body.appendChild(alerta);
-        
-        // Auto-remover após 5 segundos
-        setTimeout(() => {
-            if (alerta.parentElement) {
-                alerta.remove();
+
+            <!-- Noé -->
+            <div class="jogral-card">
+                <div class="jogral-header">
+                    <div class="jogral-icone">🚢</div>
+                    <div class="jogral-info">
+                        <h3>Noé e a Arca</h3>
+                        <p>Jogral Educativo • 8-10 crianças</p>
+                    </div>
+                </div>
+                <div class="jogral-content">
+                    <p><strong>Tema:</strong> Obediência e salvação</p>
+                    <p><strong>Personagens:</strong> Narrador, Noé, Família, Animais, Deus (voz)</p>
+                    <p><strong>Duração:</strong> 10-12 minutos</p>
+                </div>
+                <button class="btn-ver" onclick="abrirJogral('noe')">👁️ Ver Jogral Completo</button>
+            </div>
+
+            <!-- Davi e Golias -->
+            <div class="jogral-card">
+                <div class="jogral-header">
+                    <div class="jogral-icone">👑</div>
+                    <div class="jogral-info">
+                        <h3>Davi e Golias</h3>
+                        <p>Jogral de Coragem • 6-8 crianças</p>
+                    </div>
+                </div>
+                <div class="jogral-content">
+                    <p><strong>Tema:</strong> Fé e coragem em Deus</p>
+                    <p><strong>Personagens:</strong> Narrador, Davi, Golias, Soldados, Rei Saul</p>
+                    <p><strong>Duração:</strong> 8-10 minutos</p>
+                </div>
+                <button class="btn-ver" onclick="abrirJogral('davi')">👁️ Ver Jogral Completo</button>
+            </div>
+
+            <!-- Daniel -->
+            <div class="jogral-card">
+                <div class="jogral-header">
+                    <div class="jogral-icone">🦁</div>
+                    <div class="jogral-info">
+                        <h3>Daniel na Cova dos Leões</h3>
+                        <p>Jogral de Fidelidade • 5-7 crianças</p>
+                    </div>
+                </div>
+                <div class="jogral-content">
+                    <p><strong>Tema:</strong> Fidelidade e proteção divina</p>
+                    <p><strong>Personagens:</strong> Narrador, Daniel, Rei, Conselheiros, Anjo</p>
+                    <p><strong>Duração:</strong> 7-9 minutos</p>
+                </div>
+                <button class="btn-ver" onclick="abrirJogral('daniel')">👁️ Ver Jogral Completo</button>
+            </div>
+
+            <!-- Criação -->
+            <div class="jogral-card">
+                <div class="jogral-header">
+                    <div class="jogral-icone">🌍</div>
+                    <div class="jogral-info">
+                        <h3>A Criação do Mundo</h3>
+                        <p>Jogral dos 7 Dias • 7-9 crianças</p>
+                    </div>
+                </div>
+                <div class="jogral-content">
+                    <p><strong>Tema:</strong> Poder criador de Deus</p>
+                    <p><strong>Personagens:</strong> Narrador, Deus (voz), Elementos da criação</p>
+                    <p><strong>Duração:</strong> 9-11 minutos</p>
+                </div>
+                <button class="btn-ver" onclick="abrirJogral('criacao')">👁️ Ver Jogral Completo</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function fecharJogral() {
+            document.getElementById('jogral-ativo').classList.remove('show');
+        }
+
+        function mostrarJogral(conteudo) {
+            document.getElementById('conteudo-jogral').innerHTML = conteudo;
+            document.getElementById('jogral-ativo').classList.add('show');
+            window.scrollTo(0, 0);
+        }
+
+        function abrirJogral(tipo) {
+            const jograis = {
+                natal: `
+                    <h2>🎄 O Nascimento de Jesus</h2>
+                    <div class="jogral-texto">
+                        <div class="instrucao">[Cenário: Manjedoura simples ao centro. Crianças entram conforme suas falas]</div>
+                        
+                        <div class="personagem">NARRADOR:</div>
+                        Há muito tempo, na cidade de Belém,<br>
+                        Aconteceu algo que mudou o mundo também.<br>
+                        Uma jovem chamada Maria foi escolhida,<br>
+                        Para ser a mãe do Salvador, abençoada e querida.
+                        
+                        <div class="personagem">ANJO:</div>
+                        Não temas, Maria, pois achaste graça diante de Deus!<br>
+                        Conceberás um filho e será chamado Jesus.<br>
+                        Ele será grande e será chamado Filho do Altíssimo,<br>
+                        E reinará para sempre, glorioso e santíssimo!
+                        
+                        <div class="personagem">MARIA:</div>
+                        Eis aqui a serva do Senhor,<br>
+                        Cumpra-se em mim segundo o Seu amor.<br>
+                        Aceito ser mãe do Salvador,<br>
+                        Para trazer ao mundo o Redentor!
+                        
+                        <div class="personagem">JOSÉ:</div>
+                        O anjo me disse em sonho para não temer,<br>
+                        E Maria como esposa receber.<br>
+                        Cuidarei do menino Jesus com amor,<br>
+                        Pois Ele é o prometido Salvador!
+                        
+                        <div class="personagem">NARRADOR:</div>
+                        E assim nasceu Jesus em Belém,<br>
+                        Numa manjedoura, humilde também.<br>
+                        Os pastores vieram adorar,<br>
+                        O menino que veio nos salvar.
+                        
+                        <div class="personagem">PASTOR 1:</div>
+                        Vimos uma luz no céu brilhar,<br>
+                        E anjos começaram a cantar!
+                        
+                        <div class="personagem">PASTOR 2:</div>
+                        "Glória a Deus nas alturas!<br>
+                        E paz na terra às suas criaturas!"
+                        
+                        <div class="personagem">REI MAGO 1:</div>
+                        Seguimos uma estrela especial,<br>
+                        Que nos trouxe até aqui, afinal!
+                        
+                        <div class="personagem">REI MAGO 2:</div>
+                        Trouxemos ouro, incenso e mirra,<br>
+                        Para o Rei que nossa alma inspira!
+                        
+                        <div class="personagem">TODOS:</div>
+                        Jesus nasceu para nos salvar!<br>
+                        Glória a Deus, vamos celebrar!<br>
+                        Natal é tempo de alegria,<br>
+                        Cristo trouxe nova vida!
+                        
+                        <div class="instrucao">[Todos se ajoelham diante da manjedoura cantando "Noite Feliz"]</div>
+                    </div>
+                `,
+                
+                pascoa: `
+                    <h2>✝️ A Ressurreição</h2>
+                    <div class="jogral-texto">
+                        <div class="instrucao">[Cenário: Cruz ao fundo, sepulcro do lado]</div>
+                        
+                        <div class="personagem">NARRADOR:</div>
+                        Jesus morreu na cruz por amor,<br>
+                        Para nos salvar, nosso Senhor.<br>
+                        Mas a morte não O venceu,<br>
+                        Pois ao terceiro dia ressuscitou!
+                        
+                        <div class="personagem">MARIA MADALENA:</div>
+                        Vou ao sepulcro bem cedinho,<br>
+                        Levar perfumes no caminho.<br>
+                        Quero cuidar do meu Jesus,<br>
+                        Que morreu por nós na cruz.
+                        
+                        <div class="personagem">ANJO:</div>
+                        Por que buscais entre os mortos<br>
+                        Aquele que está vivo e forte?<br>
+                        Jesus ressuscitou, aleluia!<br>
+                        Vão contar esta boa nova!
+                        
+                        <div class="personagem">JESUS:</div>
+                        Paz seja convosco, meus amigos!<br>
+                        Não temais, estou convosco!<br>
+                        Venci a morte e o pecado,<br>
+                        Para que sejais salvos!
+                        
+                        <div class="personagem">TODOS:</div>
+                        Jesus ressuscitou! Aleluia!<br>
+                        Cantemos com alegria!<br>
+                        Cristo vive para sempre,<br>
+                        E conosco permanece!
+                    </div>
+                `,
+                
+                noe: `
+                    <h2>🚢 Noé e a Arca</h2>
+                    <div class="jogral-texto">
+                        <div class="instrucao">[Cenário: Arca ao centro. Animais entram em pares]</div>
+                        
+                        <div class="personagem">NARRADOR:</div>
+                        Quando o mundo estava mau,<br>
+                        Deus escolheu um homem especial.<br>
+                        Noé era justo e fiel,<br>
+                        Servo obediente do céu!
+                        
+                        <div class="personagem">DEUS (voz):</div>
+                        Noé, constrói uma arca grande,<br>
+                        Para salvar quem Me ama de verdade.<br>
+                        Virá chuva por muito tempo,<br>
+                        Mas tu estarás seguro no momento!
+                        
+                        <div class="personagem">NOÉ:</div>
+                        Senhor, farei tudo que mandas,<br>
+                        Mesmo que outros não entendam.<br>
+                        Construirei com amor e fé,<br>
+                        Confiando sempre em Você!
+                        
+                        <div class="personagem">ANIMAIS:</div>
+                        Viemos todos para nos salvar!<br>
+                        Na arca vamos entrar!<br>
+                        Deus cuidou de cada um,<br>
+                        Que amor tão comum!
+                        
+                        <div class="personagem">TODOS:</div>
+                        Deus é fiel e nos protege,<br>
+                        Quando obedecemos, Ele abençoa!<br>
+                        Como Noé, vamos confiar,<br>
+                        E sempre a Deus obedecer!
+                    </div>
+                `,
+                
+                davi: `
+                    <h2>👑 Davi e Golias</h2>
+                    <div class="jogral-texto">
+                        <div class="instrucao">[Cenário: Campo de batalha. Golias de um lado, soldados do outro]</div>
+                        
+                        <div class="personagem">NARRADOR:</div>
+                        Os filisteus vieram guerrear,<br>
+                        Com um gigante para assustar.<br>
+                        Golias era muito forte,<br>
+                        E desafiava até a morte!
+                        
+                        <div class="personagem">GOLIAS:</div>
+                        Eu sou Golias, gigante forte!<br>
+                        Quem lutar comigo terá má sorte!<br>
+                        Mandem alguém para me enfrentar,<br>
+                        Se alguém tem coragem de lutar!
+                        
+                        <div class="personagem">SOLDADO 1:</div>
+                        Que medo! Ele é muito grande!<br>
+                        Ninguém pode vencer esse gigante!
+                        
+                        <div class="personagem">SOLDADO 2:</div>
+                        Por quarenta dias ele nos desafia,<br>
+                        E ninguém tem coragem, que agonia!
+                        
+                        <div class="personagem">DAVI:</div>
+                        Quem é esse filisteu incircunciso<br>
+                        Que desafia o exército do Deus vivo?<br>
+                        Vou lutar em nome do Senhor,<br>
+                        Pois Ele é meu protetor!
+                        
+                        <div class="personagem">REI SAUL:</div>
+                        Davi, você é muito jovem,<br>
+                        Esse gigante é homem!<br>
+                        Como pode enfrentá-lo assim?<br>
+                        Isso pode ser seu fim!
+                        
+                        <div class="personagem">DAVI:</div>
+                        Majestade, eu cuido das ovelhas,<br>
+                        E já matei leão e urso nas batalhas.<br>
+                        O Senhor que me livrou deles,<br>
+                        Me livrará deste rebelde!
+                        
+                        <div class="personagem">NARRADOR:</div>
+                        Davi pegou cinco pedrinhas lisas,<br>
+                        E foi com fé, sem pressa.<br>
+                        Com sua funda na mão,<br>
+                        Confiou no Deus do coração!
+                        
+                        <div class="personagem">DAVI:</div>
+                        Tu vens contra mim com espada,<br>
+                        Mas eu venho em nome do Senhor!<br>
+                        Hoje todos saberão<br>
+                        Que a batalha é do meu Deus, então!
+                        
+                        <div class="personagem">NARRADOR:</div>
+                        Uma pedra certeira atirou,<br>
+                        Na testa do gigante acertou!<br>
+                        Golias caiu no chão,<br>
+                        E Israel gritou: "Vitória, irmão!"
+                        
+                        <div class="personagem">POVO:</div>
+                        Viva Davi! Viva o Senhor!<br>
+                        Que grande é nosso protetor!<br>
+                        A vitória vem de Deus,<br>
+                        Glória a Ele nos céus!
+                        
+                        <div class="personagem">TODOS:</div>
+                        A vitória vem do Senhor!<br>
+                        Ele é nosso protetor!<br>
+                        Como Davi, vamos confiar,<br>
+                        Que Deus vai nos ajudar!<br>
+                        Não importa o tamanho do problema,<br>
+                        Com Deus, sempre venceremos!
+                        
+                        <div class="instrucao">[Todos levantam as mãos em vitória cantando "Deus é Maior"]</div>
+                    </div>
+                `,
+                
+                daniel: `
+                    <h2>🦁 Daniel na Cova dos Leões</h2>
+                    <div class="jogral-texto">
+                        <div class="instrucao">[Cenário: Cova dos leões (crianças fazendo leões)]</div>
+                        
+                        <div class="personagem">NARRADOR:</div>
+                        Daniel era um homem de oração,<br>
+                        Que amava a Deus de coração.<br>
+                        Três vezes ao dia orava,<br>
+                        E nunca a Deus abandonava.
+                        
+                        <div class="personagem">CONSELHEIROS:</div>
+                        Rei, faça uma lei especial,<br>
+                        Que ninguém ore a outro igual.<br>
+                        Só ao senhor podem orar,<br>
+                        Quem desobedecer, aos leões vai parar!
+                        
+                        <div class="personagem">REI:</div>
+                        Está bem, farei esta lei,<br>
+                        E como rei a assinarei.
+                        
+                        <div class="personagem">DANIEL:</div>
+                        Mesmo com a lei do rei,<br>
+                        A Deus sempre orarei.<br>
+                        Prefiro morrer a negar<br>
+                        O Deus que me faz orar!
+                        
+                        <div class="personagem">NARRADOR:</div>
+                        Daniel foi jogado aos leões,<br>
+                        Mas Deus fechou suas bocas então.<br>
+                        O anjo do Senhor desceu,<br>
+                        E Daniel protegeu!
+                        
+                        <div class="personagem">ANJO:</div>
+                        Daniel, servo fiel,<br>
+                        Deus te protege do céu.<br>
+                        Os leões não te farão mal,<br>
+                        Pois tua fé é especial!
+                        
+                        <div class="personagem">TODOS:</div>
+                        Deus protege quem é fiel,<br>
+                        E sempre ora ao céu.<br>
+                        Como Daniel, vamos orar,<br>
+                        E nunca Deus abandonar!
+                    </div>
+                `,
+                
+                criacao: `
+                    <h2>🌍 A Criação do Mundo</h2>
+                    <div class="jogral-texto">
+                        <div class="instrucao">[Cenário: Escuro no início, vai clareando a cada dia]</div>
+                        
+                        <div class="personagem">NARRADOR:</div>
+                        No princípio era tudo escuro,<br>
+                        Não havia nada, nem futuro.<br>
+                        Mas Deus tinha um plano especial,<br>
+                        Para criar algo genial!
+                        
+                        <div class="personagem">DEUS (voz):</div>
+                        Haja luz! E a luz se fez!<br>
+                        Primeiro dia, que beleza!<br>
+                        Separei a luz da escuridão,<br>
+                        Dia e noite, que criação!
+                        
+                        <div class="personagem">DIA 2:</div>
+                        No segundo dia, o céu criei,<br>
+                        As águas separei!<br>
+                        Firmamento lindo e azul,<br>
+                        Brilhando como um belo jul!
+                        
+                        <div class="personagem">DIA 3:</div>
+                        Terceiro dia, terra seca apareceu,<br>
+                        E plantas verdes Deus fez!<br>
+                        Árvores, flores e capim,<br>
+                        Tudo belo, tudo assim!
+                        
+                        <div class="personagem">DIA 4:</div>
+                        Sol, lua e estrelas brilhantes,<br>
+                        No quarto dia, que elegantes!<br>
+                        Para iluminar e marcar<br>
+                        Os tempos que vão passar!
+                        
+                        <div class="personagem">DIA 5:</div>
+                        Peixes no mar, aves no ar,<br>
+                        No quinto dia a voar!<br>
+                        Que alegria, que canção,<br>
+                        Enchendo de vida o coração!
+                        
+                        <div class="personagem">DIA 6:</div>
+                        Animais da terra criei,<br>
+                        E por último formei<br>
+                        O homem à minha imagem,<br>
+                        Para cuidar da paisagem!
+                        
+                        <div class="personagem">DIA 7:</div>
+                        No sétimo dia descansei,<br>
+                        E tudo que fiz contemplei.<br>
+                        Era tudo muito bom,<br>
+                        Perfeito como um som!
+                        
+                        <div class="personagem">TODOS:</div>
+                        Deus criou tudo com amor,<br>
+                        Que grande é o Senhor!<br>
+                        Vamos cuidar da criação,<br>
+                        Com amor e gratidão!
+                    </div>
+                `
+            };
+
+            if (jograis[tipo]) {
+                mostrarJogral(jograis[tipo]);
+            } else {
+                alert('Jogral não encontrado!');
             }
-        }, 5000);
-    }
-    
-    atualizarInterface() {
-        // Atualizar estado dos botões e interface
-        const btnKaraoke = document.getElementById('btn-karaoke');
-        if (btnKaraoke) {
-            btnKaraoke.style.background = this.modoKaraoke ? '#FF6347' : '#2E8B57';
         }
-    }
-}
-
-// Dados das músicas (expandido)
-const musicasData = {
-    'jesus-me-ama': {
-        titulo: 'Jesus Me Ama',
-        artista: 'Ministério Infantil',
-        duracao: '2:30',
-        icon: '❤️',
-        letra: [
-            'Jesus me ama, disso eu sei',
-            'A Bíblia assim me ensinou',
-            'Pequeninos como eu',
-            'Ele nos ama porque nos criou'
-        ]
-    },
-    'meu-deus-grande': {
-        titulo: 'Meu Deus é Grande',
-        artista: 'Ministério Infantil',
-        duracao: '3:15',
-        icon: '🌟',
-        letra: [
-            'Meu Deus é grande, forte e poderoso',
-            'Meu Deus é grande, Ele é vitorioso',
-            'Meu Deus é grande, maior que os problemas',
-            'Meu Deus é grande, maior que os gigantes'
-        ]
-    },
-    'aleluia-criancas': {
-        titulo: 'Aleluia das Crianças',
-        artista: 'Ministério Infantil',
-        duracao: '2:45',
-        icon: '🙌',
-        letra: [
-            'Aleluia, aleluia, aleluia, aleluia',
-            'Louvamos ao Senhor',
-            'Aleluia, aleluia, aleluia, aleluia',
-            'Com todo o coração'
-        ]
-    },
-    'pai-nosso': {
-        titulo: 'Pai Nosso Infantil',
-        artista: 'Ministério Infantil',
-        duracao: '3:00',
-        icon: '🙏',
-        letra: [
-            'Pai nosso que estás nos céus',
-            'Santificado seja o teu nome',
-            'Venha o teu reino',
-            'Seja feita a tua vontade'
-        ]
-    },
-    'biblia-livro': {
-        titulo: 'A Bíblia é o Livro',
-        artista: 'Ministério Infantil',
-        duracao: '2:20',
-        icon: '📖',
-        letra: [
-            'A Bíblia é o livro que nos ensina',
-            'Como viver para Jesus',
-            'A Bíblia é o livro da verdade',
-            'Que nos mostra o caminho da luz'
-        ]
-    },
-    'jesus-amigo': {
-        titulo: 'Jesus é Meu Amigo',
-        artista: 'Ministério Infantil',
-        duracao: '2:50',
-        icon: '👫',
-        letra: [
-            'Jesus é meu amigo querido',
-            'Ele nunca me deixará',
-            'Jesus é meu amigo fiel',
-            'Para sempre me amará'
-        ]
-    }
-};
-
-// Instância global do player
-let louvorPlayer;
-
-// Funções globais para compatibilidade
-function selecionarMusica(musicaId) {
-    louvorPlayer.selecionarMusica(musicaId);
-}
-
-function tocarMusica(musicaId) {
-    louvorPlayer.tocarMusica(musicaId);
-}
-
-function togglePlayPause() {
-    louvorPlayer.togglePlayPause();
-}
-
-function musicaAnterior() {
-    louvorPlayer.musicaAnterior();
-}
-
-function proximaMusica() {
-    louvorPlayer.proximaMusica();
-}
-
-function abrirKaraoke() {
-    louvorPlayer.abrirKaraoke();
-}
-
-function modoKaraoke(musicaId) {
-    louvorPlayer.selecionarMusica(musicaId);
-    louvorPlayer.abrirKaraoke();
-}
-
-function buscarTempo(event) {
-    louvorPlayer.buscarTempo(event);
-}
-
-// Inicialização
-document.addEventListener('DOMContentLoaded', function() {
-    louvorPlayer = new LouvorPlayer();
-    console.log('🎵 Louvor Infantil - Igreja Cristo Vive carregado!');
-});
-
-// Estilos CSS para as notificações e modal karaokê
-const estilosLouvor = `
-<style>
-@keyframes slideIn {
-    from { transform: translateX(100%); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
-}
-
-@keyframes slideOut {
-    from { transform: translateX(0); opacity: 1; }
-    to { transform: translateX(100%); opacity: 0; }
-}
-
-.modal-karaoke {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.9);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-}
-
-.modal-content-karaoke {
-    background: linear-gradient(135deg, #2E8B57, #4CAF50);
-    border-radius: 20px;
-    max-width: 800px;
-    width: 90%;
-    color: white;
-    overflow: hidden;
-}
-
-.karaoke-header {
-    padding: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid rgba(255,255,255,0.2);
-}
-
-.karaoke-header h2 {
-    margin: 0;
-    font-size: 1.5rem;
-}
-
-.karaoke-header button {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 1.5rem;
-    cursor: pointer;
-    padding: 5px;
-    border-radius: 50%;
-    transition: background 0.3s;
-}
-
-.karaoke-header button:hover {
-    background: rgba(255,255,255,0.2);
-}
-
-.karaoke-body {
-    padding: 30px;
-}
-
-.musica-info-karaoke {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.musica-info-karaoke h3 {
-    font-size: 1.8rem;
-    margin: 0 0 10px 0;
-}
-
-.musica-info-karaoke p {
-    font-size: 1.1rem;
-    opacity: 0.8;
-    margin: 0;
-}
-
-.letra-karaoke {
-    background: rgba(255,255,255,0.1);
-    border-radius: 15px;
-    padding: 30px;
-    margin-bottom: 30px;
-    min-height: 200px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.letra-linha {
-    font-size: 1.5rem;
-    text-align: center;
-    margin: 10px 0;
-    opacity: 0.6;
-    transition: all 0.3s ease;
-}
-
-.letra-linha.ativa {
-    opacity: 1;
-    font-size: 1.8rem;
-    font-weight: bold;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-    transform: scale(1.1);
-}
-
-.karaoke-controles {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    flex-wrap: wrap;
-}
-
-.karaoke-controles button {
-    background: rgba(255,255,255,0.2);
-    border: none;
-    color: white;
-    padding: 12px 20px;
-    border-radius: 25px;
-    cursor: pointer;
-    font-family: 'Comic Neue', cursive;
-    font-weight: 600;
-    transition: all 0.3s ease;
-}
-
-.karaoke-controles button:hover {
-    background: rgba(255,255,255,0.3);
-    transform: translateY(-2px);
-}
-
-@media (max-width: 768px) {
-    .modal-content-karaoke {
-        width: 95%;
-        margin: 20px;
-    }
-    
-    .karaoke-body {
-        padding: 20px;
-    }
-    
-    .letra-linha {
-        font-size: 1.2rem;
-    }
-    
-    .letra-linha.ativa {
-        font-size: 1.4rem;
-    }
-    
-    .karaoke-controles {
-        flex-direction: column;
-        align-items: center;
-    }
-}
-</style>
-`;
-
-// Adicionar estilos ao documento
-document.head.insertAdjacentHTML('beforeend', estilosLouvor);
+    </script>
+</body>
+</html>

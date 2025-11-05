@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atividades - Pequenos Discípulos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive;
+            background: linear-gradient(135deg, #87CEEB, #98FB98);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: #4169E1;
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .activities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .activity-card {
+            background: linear-gradient(145deg, #f0f8ff, #e6f3ff);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 3px solid #87CEEB;
+        }
+
+        .activity-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+
+        .activity-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .activity-card h3 {
+            color: #4169E1;
+            font-size: 1.8em;
+            margin-bottom: 15px;
+        }
+
+        .activity-card p {
+            color: #666;
+            font-size: 1.1em;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            margin: 8px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #4169E1, #6495ED);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #32CD32, #90EE90);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #333;
+        }
+
+        .btn-info {
+            background: linear-gradient(45deg, #17a2b8, #5bc0de);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .back-button {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .fun-facts {
+            background: linear-gradient(45deg, #FFE4E1, #FFF0F5);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+            border-left: 5px solid #FF69B4;
+        }
+
+        .fun-facts h4 {
+            color: #FF1493;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .header h1 {
+                font-size: 2.2em;
+            }
+
+            .activities-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .activity-card {
+                padding: 20px;
+            }
+
+            .activity-icon {
+                font-size: 3em;
+            }
+
+            .btn {
+                padding: 10px 20px;
+                font-size: 14px;
+                margin: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎨 Atividades Divertidas 🎨</h1>
+            <p>Escolha uma atividade e divirta-se aprendendo sobre Jesus!</p>
+        </div>
+
+        <div class="activities-grid">
+            <!-- Atividade 1: Colorir -->
+            <div class="activity-card">
+                <span class="activity-icon">🎨</span>
+                <h3>Desenhos para Colorir</h3>
+                <p>Divirta-se colorindo lindos desenhos bíblicos! Use sua criatividade para dar vida às histórias de Jesus.</p>
+                <a href="#" class="btn btn-success" onclick="mostrarListaDesenhos()">
+                    📋 Lista de Desenhos
+                </a>
+            </div>
+
+            <!-- Atividade 2: Quebra-cabeças -->
+            <div class="activity-card">
+                <span class="activity-icon">��</span>
+                <h3>Quebra-cabeças Bíblicos</h3>
+                <p>Monte quebra-cabeças com cenas da Bíblia e desenvolva seu raciocínio enquanto aprende!</p>
+                <a href="#" class="btn btn-warning" onclick="jogarQuebracabeca()">
+                    🧩 Jogar Agora
+                </a>
+            </div>
+
+            <!-- Atividade 3: Caça-palavras -->
+            <div class="activity-card">
+                <span class="activity-icon">🔍</span>
+                <h3>Caça-palavras Cristão</h3>
+                <p>Encontre palavras relacionadas à fé cristã neste divertido caça-palavras educativo!</p>
+                <a href="#" class="btn btn-info" onclick="jogarCacaPalavras()">
+                    🔍 Procurar Palavras
+                </a>
+            </div>
+
+            <!-- Atividade 4: Jogo da Memória -->
+            <div class="activity-card">
+                <span class="activity-icon">🃏</span>
+                <h3>Jogo da Memória</h3>
+                <p>Teste sua memória com cartas que contam as histórias mais bonitas da Bíblia!</p>
+                <a href="#" class="btn btn-success" onclick="jogarMemoria()">
+                    �� Jogar Memória
+                </a>
+            </div>
+
+            <!-- Atividade 5: Quiz Bíblico -->
+            <div class="activity-card">
+                <span class="activity-icon">❓</span>
+                <h3>Quiz Bíblico Infantil</h3>
+                <p>Responda perguntas divertidas sobre a Bíblia e teste seus conhecimentos!</p>
+                <a href="#" class="btn btn-warning" onclick="iniciarQuiz()">
+                    ❓ Começar Quiz
+                </a>
+            </div>
+
+            <!-- Atividade 6: Histórias Interativas -->
+            <div class="activity-card">
+                <span class="activity-icon">📚</span>
+                <h3>Histórias Interativas</h3>
+                <p>Ouça e participe de histórias bíblicas contadas de forma interativa e divertida!</p>
+                <a href="#" class="btn btn-info" onclick="ouvirHistorias()">
+                    �� Ouvir Histórias
+                </a>
+            </div>
+        </div>
+
+        <div class="fun-facts">
+            <h4>🌟 Você Sabia?</h4>
+            <p>Cada atividade foi criada com muito carinho para ajudar você a aprender sobre Jesus de forma divertida! Convide seus amigos e família para brincar junto!</p>
+        </div>
+
+        <div class="back-button">
+            <a href="../index.html" class="btn btn-primary">
+                🏠 Voltar para Home
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function mostrarListaDesenhos() {
+            alert('🎨 DESENHOS DISPONÍVEIS PARA COLORIR:\n\n' +
+                  '1. 📖 Daniel e a Cova dos Leões\n' +
+                  '2. 👶 Jesus Cristo e as Crianças\n' +
+                  '3. 👭 Maria e Marta\n' +
+                  '4. ⚡ Moisés\n' +
+                  '5. 🚢 Noé e a Arca\n' +
+                  '6. 👑 O Rei Davi\n\n' +
+                  '📁 Para acessar:\n' +
+                  '• Vá para a pasta "images" do seu projeto\n' +
+                  '• Encontre os arquivos .jpg com estes nomes\n' +
+                  '• Abra para visualizar e imprimir!\n\n' +
+                  '🖨️ Dica: Imprima em papel A4 para colorir!');
+        }
+
+        function jogarQuebracabeca() {
+            alert('🧩 Quebra-cabeças em desenvolvimento!\n\nEm breve teremos jogos incríveis para você! 🌟');
+        }
+
+        function jogarCacaPalavras() {
+            alert('�� Caça-palavras chegando em breve!\n\nFique ligado nas novidades! 🌟');
+        }
+
+        function jogarMemoria() {
+            alert('🃏 Jogo da memória em produção!\n\nEm breve você poderá testar sua memória! 🌟');
+        }
+
+        function iniciarQuiz() {
+            alert('❓ Quiz bíblico chegando em breve!\n\nPreparamos perguntas super divertidas para você! 🌟');
+        }
+
+        function ouvirHistorias() {
+            alert('📚 Histórias interativas em desenvolvimento!\n\nEm breve você poderá ouvir histórias incríveis! ��');
+        }
+    </script>
+</body>
+</html>

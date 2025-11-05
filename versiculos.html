@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📖 Sistema de Versículos - Igreja Cristo Vive</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header-versiculos {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .header-versiculos h1 {
+            font-size: 2.5em;
+            color: #4a5568;
+            margin-bottom: 10px;
+        }
+
+        .header-versiculos p {
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .localizacao {
+            background: #ff6b6b;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            display: inline-block;
+            font-weight: bold;
+        }
+
+        .btn-voltar {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+            margin-bottom: 20px;
+        }
+
+        .btn-voltar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+
+        .controles {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn-categoria {
+            background: linear-gradient(135deg, #28a745, #1e7e34);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+        }
+
+        .btn-categoria:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+
+        .btn-categoria.ativo {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+        }
+
+        .btn-aleatorio {
+            background: linear-gradient(135deg, #17a2b8, #117a8b);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+        }
+
+        .btn-aleatorio:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(23, 162, 184, 0.4);
+        }
+
+        .versiculo-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            text-align: center;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .versiculo-texto {
+            font-size: 1.8em;
+            line-height: 1.6;
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-style: italic;
+            quotes: """ """;
+        }
+
+        .versiculo-texto::before {
+            content: open-quote;
+            font-size: 1.5em;
+            color: #ff6b6b;
+        }
+
+        .versiculo-texto::after {
+            content: close-quote;
+            font-size: 1.5em;
+            color: #ff6b6b;
+        }
+
+        .versiculo-referencia {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #ff6b6b;
+            margin-bottom: 15px;
+        }
+
+        .versiculo-categoria {
+            background: #e3f2fd;
+            color: #1565c0;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .navegacao {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn-nav {
+            background: linear-gradient(135deg, #6f42c1, #5a2d91);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-nav:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(111, 66, 193, 0.4);
+        }
+
+        .contador {
+            background: #f8f9fa;
+            padding: 10px 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            font-weight: bold;
+            color: #4a5568;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .header-versiculos h1 {
+                font-size: 2em;
+            }
+
+            .versiculo-texto {
+                font-size: 1.4em;
+            }
+
+            .versiculo-referencia {
+                font-size: 1.1em;
+            }
+
+            .controles {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .navegacao {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Cabeçalho -->
+        <header class="header-versiculos">
+            <a href="../index.html" class="btn-voltar">
+                ⬅️ Voltar ao Início
+            </a>
+            <h1>📖 Sistema de Versículos</h1>
+            <p>Descubra e memorize a Palavra de Deus!</p>
+            <div class="localizacao">📍 Igreja Cristo Vive de Paracambi/RJ</div>
+        </header>
+
+        <!-- Controles -->
+        <div class="controles">
+            <button class="btn-categoria ativo" onclick="filtrarCategoria('amor')">❤️ Amor</button>
+            <button class="btn-categoria" onclick="filtrarCategoria('fe')">✨ Fé</button>
+            <button class="btn-categoria" onclick="filtrarCategoria('esperanca')">🌟 Esperança</button>
+            <button class="btn-categoria" onclick="filtrarCategoria('paz')">🕊️ Paz</button>
+            <button class="btn-categoria" onclick="filtrarCategoria('sabedoria')">🧠 Sabedoria</button>
+            <button class="btn-aleatorio" onclick="versiculoAleatorio()">🎲 Versículo Aleatório</button>
+        </div>
+
+        <!-- Container do Versículo -->
+        <div class="versiculo-container">
+            <div class="versiculo-categoria" id="categoria-atual">❤️ Amor de Deus</div>
+            <div class="versiculo-texto" id="texto-versiculo">
+                Porque Deus amou o mundo de tal maneira que deu o seu Filho unigênito, para que todo aquele que nele crê não pereça, mas tenha a vida eterna.
+            </div>
+            <div class="versiculo-referencia" id="referencia-versiculo">João 3:16</div>
+            <div class="contador" id="contador">Versículo 1 de 12</div>
+            
+            <div class="navegacao">
+                <button class="btn-nav" onclick="versiculoAnterior()">⬅️ Anterior</button>
+                <button class="btn-nav" onclick="proximoVersiculo()">Próximo ➡️</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const versiculos = {
+            amor: [
+                { texto: "Porque Deus amou o mundo de tal maneira que deu o seu Filho unigênito, para que todo aquele que nele crê não pereça, mas tenha a vida eterna.", referencia: "João 3:16" },
+                { texto: "Nisto conhecemos o amor: que Cristo deu a sua vida por nós; e devemos dar nossa vida pelos irmãos.", referencia: "1 João 3:16" },
+                { texto: "Deus é amor; e quem permanece no amor permanece em Deus, e Deus nele.", referencia: "1 João 4:16" },
+                { texto: "Nós amamos porque ele nos amou primeiro.", referencia: "1 João 4:19" },
+                { texto: "Mas Deus prova o seu próprio amor para conosco pelo fato de ter Cristo morrido por nós, sendo nós ainda pecadores.", referencia: "Romanos 5:8" },
+                { texto: "O amor é paciente, o amor é bondoso. Não inveja, não se vangloria, não se orgulha.", referencia: "1 Coríntios 13:4" },
+                { texto: "Acima de tudo, porém, revistam-se do amor, que é o elo perfeito.", referencia: "Colossenses 3:14" },
+                { texto: "Como o Pai me amou, também eu vos amei; permanecei no meu amor.", referencia: "João 15:9" },
+                { texto: "Nisto está o amor: não em que nós tenhamos amado a Deus, mas em que ele nos amou e enviou o seu Filho como propiciação pelos nossos pecados.", referencia: "1 João 4:10" },
+                { texto: "O amor jamais acaba; mas, havendo profecias, desaparecerão; havendo línguas, cessarão; havendo ciência, passará.", referencia: "1 Coríntios 13:8" },
+                { texto: "Quem não ama não conhece a Deus, pois Deus é amor.", referencia: "1 João 4:8" },
+                { texto: "E eu lhes dou a vida eterna; jamais perecerão, e ninguém as arrebatará da minha mão.", referencia: "João 10:28" }
+            ],
+            fe: [
+                { texto: "Ora, a fé é a certeza de coisas que se esperam, a convicção de fatos que se não veem.", referencia: "Hebreus 11:1" },
+                { texto: "Tudo posso naquele que me fortalece.", referencia: "Filipenses 4:13" },
+                { texto: "E Jesus disse-lhe: Se podes crer, tudo é possível ao que crê.", referencia: "Marcos 9:23" },
+                { texto: "Porque andamos por fé e não por vista.", referencia: "2 Coríntios 5:7" },
+                { texto: "Sem fé é impossível agradar a Deus, pois quem dele se aproxima precisa crer que ele existe e que recompensa aqueles que o buscam.", referencia: "Hebreus 11:6" },
+                { texto: "Disse-lhe Jesus: Não te disse eu que, se creres, verás a glória de Deus?", referencia: "João 11:40" },
+                { texto: "Porque todo o que é nascido de Deus vence o mundo; e esta é a vitória que vence o mundo: a nossa fé.", referencia: "1 João 5:4" },
+                { texto: "Respondeu-lhe Jesus: Eu sou a ressurreição e a vida. Quem crê em mim, ainda que morra, viverá.", referencia: "João 11:25" },
+                { texto: "Mas, buscai primeiro o reino de Deus e a sua justiça, e todas essas coisas vos serão acrescentadas.", referencia: "Mateus 6:33" },
+                { texto: "Confia no Senhor de todo o teu coração e não te estribes no teu próprio entendimento.", referencia: "Provérbios 3:5" }
+            ],
+            esperanca: [
+                { texto: "Porque eu bem sei os pensamentos que tenho a vosso respeito, diz o Senhor; pensamentos de paz e não de mal, para vos dar o fim que esperais.", referencia: "Jeremias 29:11" },
+                { texto: "Bendito seja o Deus e Pai de nosso Senhor Jesus Cristo, que, segundo a sua grande misericórdia, nos gerou de novo para uma viva esperança.", referencia: "1 Pedro 1:3" },
+                { texto: "Ora, o Deus da esperança vos encha de todo o gozo e paz em crença, para que abundeis em esperança pela virtude do Espírito Santo.", referencia: "Romanos 15:13" },
+                { texto: "Aguardando a bem-aventurada esperança e o aparecimento da glória do grande Deus e nosso Senhor Jesus Cristo.", referencia: "Tito 2:13" },
+                { texto: "Lança sobre o Senhor o teu cuidado, e ele te susterá; não permitirá jamais que o justo seja abalado.", referencia: "Salmos 55:22" },
+                { texto: "E a esperança não traz confusão, porquanto o amor de Deus está derramado em nossos corações pelo Espírito Santo que nos foi dado.", referencia: "Romanos 5:5" },
+                { texto: "Por isso, não desanimamos. Embora exteriormente estejamos a desgastar-nos, interiormente estamos sendo renovados dia após dia.", referencia: "2 Coríntios 4:16" },
+                { texto: "Porque a nossa leve e momentânea tribulação produz para nós um peso eterno de glória mui excelente.", referencia: "2 Coríntios 4:17" }
+            ],
+            paz: [
+                { texto: "Deixo-vos a paz, a minha paz vos dou; não vo-la dou como o mundo a dá. Não se turbe o vosso coração, nem se atemorize.", referencia: "João 14:27" },
+                { texto: "E a paz de Deus, que excede todo o entendimento, guardará os vossos corações e os vossos sentimentos em Cristo Jesus.", referencia: "Filipenses 4:7" },
+                { texto: "O Senhor é o meu pastor; nada me faltará.", referencia: "Salmos 23:1" },
+                { texto: "Vinde a mim, todos os que estais cansados e oprimidos, e eu vos aliviarei.", referencia: "Mateus 11:28" },
+                { texto: "Não andeis cuidadosos por coisa alguma; antes, as vossas petições sejam em tudo conhecidas diante de Deus, pela oração e súplicas, com ação de graças.", referencia: "Filipenses 4:6" },
+                { texto: "Tu conservarás em paz aquele cuja mente está firme em ti; porque ele confia em ti.", referencia: "Isaías 26:3" },
+                { texto: "Tenho-vos dito isto, para que em mim tenhais paz; no mundo tereis aflições, mas tende bom ânimo; eu venci o mundo.", referencia: "João 16:33" },
+                { texto: "Bem-aventurados os pacificadores, porque eles serão chamados filhos de Deus.", referencia: "Mateus 5:9" },
+                { texto: "Segue a paz com todos e a santificação, sem a qual ninguém verá o Senhor.", referencia: "Hebreus 12:14" },
+                { texto: "Grandes paz têm os que amam a tua lei, e para eles não há tropeço.", referencia: "Salmos 119:165" }
+            ],
+            sabedoria: [
+                { texto: "O temor do Senhor é o princípio da sabedoria, e o conhecimento do Santo, a prudência.", referencia: "Provérbios 9:10" },
+                { texto: "E, se algum de vós tem falta de sabedoria, peça-a a Deus, que a todos dá liberalmente e não o lança em rosto; e ser-lhe-á dada.", referencia: "Tiago 1:5" },
+                { texto: "Confia no Senhor de todo o teu coração e não te estribes no teu próprio entendimento.", referencia: "Provérbios 3:5" },
+                { texto: "Porque o Senhor dá a sabedoria; da sua boca vem o conhecimento e o entendimento.", referencia: "Provérbios 2:6" },
+                { texto: "O princípio da sabedoria é: Adquire a sabedoria; e, com toda a tua possessão, adquire o entendimento.", referencia: "Provérbios 4:7" },
+                { texto: "Mas a sabedoria que do alto vem é, primeiramente, pura, depois, pacífica, moderada, tratável, cheia de misericórdia e de bons frutos, sem parcialidade e sem hipocrisia.", referencia: "Tiago 3:17" },
+                { texto: "Lâmpada para os meus pés é tua palavra e luz, para o meu caminho.", referencia: "Salmos 119:105" },
+                { texto: "Instrui ao menino no caminho em que deve andar, e, até quando envelhecer, não se desviará dele.", referencia: "Provérbios 22:6" },
+                { texto: "Porque os meus pensamentos não são os vossos pensamentos, nem os vossos caminhos, os meus caminhos, diz o Senhor.", referencia: "Isaías 55:8" },
+                { texto: "A sabedoria edifica a sua casa, mas a loucura a derruba com as suas mãos.", referencia: "Provérbios 14:1" }
+            ]
+        };
+
+        let categoriaAtual = 'amor';
+        let indiceAtual = 0;
+        let versiculosAtivos = versiculos.amor;
+
+        function filtrarCategoria(categoria) {
+            categoriaAtual = categoria;
+            indiceAtual = 0;
+            versiculosAtivos = versiculos[categoria];
+
+            // Atualizar botões
+            document.querySelectorAll('.btn-categoria').forEach(btn => {
+                btn.classList.remove('ativo');
+            });
+            event.target.classList.add('ativo');
+
+            mostrarVersiculo();
+        }
+
+        function mostrarVersiculo() {
+            if (versiculosAtivos.length === 0) return;
+
+            const versiculo = versiculosAtivos[indiceAtual];
+            const categoriaIcons = {
+                amor: '❤️ Amor de Deus',
+                fe: '✨ Fé e Confiança',
+                esperanca: '🌟 Esperança',
+                paz: '🕊️ Paz do Senhor',
+                sabedoria: '🧠 Sabedoria Divina'
+            };
+
+            document.getElementById('categoria-atual').textContent = categoriaIcons[categoriaAtual];
+            document.getElementById('texto-versiculo').textContent = versiculo.texto;
+            document.getElementById('referencia-versiculo').textContent = versiculo.referencia;
+            document.getElementById('contador').textContent = `Versículo ${indiceAtual + 1} de ${versiculosAtivos.length}`;
+        }
+
+        function proximoVersiculo() {
+            if (versiculosAtivos.length === 0) return;
+            indiceAtual = (indiceAtual + 1) % versiculosAtivos.length;
+            mostrarVersiculo();
+        }
+
+        function versiculoAnterior() {
+            if (versiculosAtivos.length === 0) return;
+            indiceAtual = indiceAtual === 0 ? versiculosAtivos.length - 1 : indiceAtual - 1;
+            mostrarVersiculo();
+        }
+
+        function versiculoAleatorio() {
+            const todasCategorias = Object.keys(versiculos);
+            const categoriaAleatoria = todasCategorias[Math.floor(Math.random() * todasCategorias.length)];
+            const versiculosCategoria = versiculos[categoriaAleatoria];
+            const versiculoAleatorio = versiculosCategoria[Math.floor(Math.random() * versiculosCategoria.length)];
+
+            const categoriaIcons = {
+                amor: '❤️ Amor de Deus',
+                fe: '✨ Fé e Confiança',
+                esperanca: '🌟 Esperança',
+                paz: '🕊️ Paz do Senhor',
+                sabedoria: '🧠 Sabedoria Divina'
+            };
+
+            document.getElementById('categoria-atual').textContent = categoriaIcons[categoriaAleatoria];
+            document.getElementById('texto-versiculo').textContent = versiculoAleatorio.texto;
+            document.getElementById('referencia-versiculo').textContent = versiculoAleatorio.referencia;
+            document.getElementById('contador').textContent = `Versículo Aleatório 🎲`;
+
+            // Remover ativo de todos os botões
+            document.querySelectorAll('.btn-categoria').forEach(btn => {
+                btn.classList.remove('ativo');
+            });
+        }
+
+        // Inicializar
+        mostrarVersiculo();
+    </script>
+</body>
+</html>

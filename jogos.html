@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 Jogos Bíblicos - Igreja Cristo Vive</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header-jogos {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .header-jogos h1 {
+            font-size: 2.5em;
+            color: #4a5568;
+            margin-bottom: 10px;
+        }
+
+        .header-jogos p {
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .localizacao {
+            background: #ff6b6b;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            display: inline-block;
+            font-weight: bold;
+        }
+
+        .botao-voltar-container {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .btn-voltar {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .btn-voltar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+
+        .jogos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .jogo-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+        }
+
+        .jogo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            border-color: #ff6b6b;
+        }
+
+        .jogo-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .jogo-icone {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            color: white;
+        }
+
+        .jogo-info h3 {
+            color: #4a5568;
+            margin-bottom: 5px;
+            font-size: 1.4em;
+        }
+
+        .jogo-info p {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .jogo-content {
+            margin-bottom: 20px;
+        }
+
+        .btn-jogar {
+            width: 100%;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 15px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-jogar:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        .jogo-ativo {
+            display: none;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .jogo-ativo.show {
+            display: block;
+        }
+
+        .jogo-ativo h2 {
+            text-align: center;
+            color: #4a5568;
+            margin-bottom: 25px;
+            font-size: 2em;
+        }
+
+        .btn-fechar {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            float: right;
+            margin-bottom: 20px;
+        }
+
+        .btn-fechar:hover {
+            background: #ee5a52;
+        }
+
+        .jogo-content-area {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .difficulty-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+            margin: 10px;
+        }
+
+        .difficulty-btn.facil {
+            background: #28a745;
+            color: white;
+        }
+
+        .difficulty-btn.medio {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .difficulty-btn.dificil {
+            background: #dc3545;
+            color: white;
+        }
+
+        .difficulty-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .pergunta {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            font-size: 1.3em;
+        }
+
+        .opcao {
+            background: white;
+            border: 2px solid #ddd;
+            padding: 15px;
+            margin: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+            min-width: 200px;
+        }
+
+        .opcao:hover {
+            border-color: #ff6b6b;
+            background: #fff5f5;
+        }
+
+        .opcao.correta {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+
+        .opcao.incorreta {
+            background: #f8d7da;
+            border-color: #dc3545;
+        }
+
+        /* Estilos do Jogo da Memória */
+        .memory-grid {
+            display: grid;
+            gap: 10px;
+            max-width: 600px;
+            margin: 20px auto;
+            justify-content: center;
+        }
+
+        .memory-grid.facil {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .memory-grid.medio {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .memory-grid.dificil {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .memory-card {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+
+        .memory-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        .memory-card.flipped {
+            background: white;
+            border: 2px solid #ff6b6b;
+            color: #4a5568;
+        }
+
+        .memory-card.matched {
+            background: #28a745;
+            color: white;
+            cursor: not-allowed;
+        }
+
+        .memory-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 20px 0;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .memory-stats div {
+            background: #f8f9fa;
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+        }
+
+        /* Estilos da Forca */
+        .forca-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .forca-desenho {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.5em;
+            white-space: pre-line;
+            text-align: center;
+            border: 2px solid #ddd;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+
+        .forca-desenho.game-over {
+            color: #dc3545;
+            background: #f8d7da;
+            border-color: #dc3545;
+        }
+
+        .forca-palavra {
+            font-size: 2.5em;
+            font-weight: bold;
+            letter-spacing: 15px;
+            margin: 20px 0;
+            color: #4a5568;
+            word-break: break-all;
+            white-space: normal;
+        }
+
+        .forca-dica {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .forca-info {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+
+        .forca-info div {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+        }
+
+        .alfabeto-container {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+            margin: 20px 0;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .letra-btn {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .letra-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 3px 10px rgba(255, 107, 107, 0.4);
+        }
+
+        .letra-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .header-jogos h1 {
+                font-size: 2em;
+            }
+
+            .jogos-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .botao-voltar-container {
+                text-align: center;
+            }
+
+            .btn-voltar {
+                font-size: 0.9em;
+                padding: 10px 18px;
+            }
+
+            .memory-card {
+                width: 60px;
+                height: 60px;
+                font-size: 1.2em;
+            }
+
+            .memory-stats {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .forca-palavra {
+                font-size: 2em;
+                letter-spacing: 10px;
+            }
+
+            .alfabeto-container {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .letra-btn {
+                padding: 10px;
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Cabeçalho -->
+        <header class="header-jogos">
+            <div class="botao-voltar-container">
+                <a href="../index.html" class="btn-voltar">
+                    ⬅️ Voltar ao Início
+                </a>
+            </div>
+            <h1>🎮 Jogos Bíblicos Interativos</h1>
+            <p>Aprenda a Bíblia de forma divertida e educativa!</p>
+            <div class="localizacao">📍 Igreja Cristo Vive de Paracambi/RJ</div>
+        </header>
+
+        <!-- Área do Jogo Ativo -->
+        <div id="jogo-ativo" class="jogo-ativo">
+            <button class="btn-fechar" onclick="fecharJogo()">✕ Fechar</button>
+            <div id="conteudo-jogo"></div>
+        </div>
+
+        <!-- Grid de Jogos - APENAS OS 3 QUE FUNCIONAM -->
+        <div class="jogos-grid">
+            <!-- Quiz Bíblico -->
+            <div class="jogo-card">
+                <div class="jogo-header">
+                    <div class="jogo-icone">🧠</div>
+                    <div class="jogo-info">
+                        <h3>Quiz Bíblico</h3>
+                        <p>Teste seus conhecimentos sobre a Bíblia</p>
+                    </div>
+                </div>
+                <div class="jogo-content">
+                    <p>Responda 5 perguntas sobre histórias bíblicas, personagens e versículos com 3 níveis de dificuldade!</p>
+                </div>
+                <button class="btn-jogar" onclick="abrirQuiz()">🎯 Jogar Quiz</button>
+            </div>
+
+            <!-- Jogo da Forca -->
+            <div class="jogo-card">
+                <div class="jogo-header">
+                    <div class="jogo-icone">��</div>
+                    <div class="jogo-info">
+                        <h3>Forca Bíblica</h3>
+                        <p>Descubra palavras bíblicas</p>
+                    </div>
+                </div>
+                <div class="jogo-content">
+                    <p>Adivinhe palavras bíblicas letra por letra. Cuidado para não completar a forca!</p>
+                </div>
+                <button class="btn-jogar" onclick="abrirForca()">🎪 Jogar Forca</button>
+            </div>
+
+            <!-- Jogo da Memória -->
+            <div class="jogo-card">
+                <div class="jogo-header">
+                    <div class="jogo-icone">🧩</div>
+                    <div class="jogo-info">
+                        <h3>Jogo da Memória</h3>
+                        <p>Encontre os pares de personagens bíblicos</p>
+                    </div>
+                </div>
+                <div class="jogo-content">
+                    <p>Vire as cartas numeradas e encontre os pares de personagens da Bíblia em 3 níveis de dificuldade!</p>
+                </div>
+                <button class="btn-jogar" onclick="abrirMemoria()">🧠 Jogar Memória</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Função para fechar jogo
+        function fecharJogo() {
+            document.getElementById('jogo-ativo').classList.remove('show');
+        }
+
+        // Função para mostrar jogo
+        function mostrarJogo(conteudo) {
+            document.getElementById('conteudo-jogo').innerHTML = conteudo;
+            document.getElementById('jogo-ativo').classList.add('show');
+            window.scrollTo(0, 0);
+        }
+
+        // QUIZ BÍBLICO
+        function abrirQuiz() {
+            mostrarJogo(`
+                <h2>🧠 Quiz Bíblico</h2>
+                <div class="jogo-content-area">
+                    <h3>Escolha o nível de dificuldade:</h3>
+                    <button class="difficulty-btn facil" onclick="iniciarQuizCompleto('facil')">😊 Fácil</button>
+                    <button class="difficulty-btn medio" onclick="iniciarQuizCompleto('medio')">🤔 Médio</button>
+                    <button class="difficulty-btn dificil" onclick="iniciarQuizCompleto('dificil')">😰 Difícil</button>
+                </div>
+            `);
+        }
+
+        function iniciarQuizCompleto(nivel) {
+            const perguntas = {
+                facil: [
+                    { pergunta: "Quem construiu a arca?", opcoes: ["Moisés", "Noé", "Abraão", "Davi"], correta: 1 },
+                    { pergunta: "Quantos discípulos Jesus tinha?", opcoes: ["10", "11", "12", "13"], correta: 2 },
+                    { pergunta: "Onde Jesus nasceu?", opcoes: ["Nazaré", "Belém", "Jerusalém", "Cafarnaum"], correta: 1 },
+                    { pergunta: "Qual o nome da mãe de Jesus?", opcoes: ["Ana", "Isabel", "Maria", "Marta"], correta: 2 },
+                    { pergunta: "Quem foi o primeiro homem?", opcoes: ["Abel", "Caim", "Adão", "Noé"], correta: 2 }
+                ],
+                medio: [
+                    { pergunta: "Quantos dias Jesus ficou no deserto?", opcoes: ["30", "40", "50", "60"], correta: 1 },
+                    { pergunta: "Qual o nome do monte onde Moisés recebeu os mandamentos?", opcoes: ["Sinai", "Carmelo", "Oliveiras", "Sião"], correta: 0 },
+                    { pergunta: "Quantos livros tem o Novo Testamento?", opcoes: ["25", "26", "27", "28"], correta: 2 },
+                    { pergunta: "Quem foi vendido pelos irmãos?", opcoes: ["José", "Benjamim", "Judá", "Rubem"], correta: 0 },
+                    { pergunta: "Qual o nome do jardim onde Adão e Eva viviam?", opcoes: ["Getsêmani", "Éden", "Oliveiras", "Cedrom"], correta: 1 }
+                ],
+                dificil: [
+                    { pergunta: "Quantos anos durou a construção do templo de Salomão?", opcoes: ["5", "7", "10", "12"], correta: 1 },
+                    { pergunta: "Qual o nome do pai de João Batista?", opcoes: ["Zacarias", "Simeão", "José", "Joaquim"], correta: 0 },
+                    { pergunta: "Quantos filhos Jacó teve?", opcoes: ["10", "11", "12", "13"], correta: 2 },
+                    { pergunta: "Qual o nome da montanha onde a arca de Noé pousou?", opcoes: ["Sinai", "Ararat", "Carmelo", "Hermom"], correta: 1 },
+                    { pergunta: "Quantos capítulos tem o livro de Isaías?", opcoes: ["64", "65", "66", "67"], correta: 2 }
+                ]
+            };
+
+            let perguntaAtual = 0;
+            let pontuacao = 0;
+            const perguntasNivel = perguntas[nivel];
+
+            function mostrarPergunta() {
+                if (perguntaAtual >= perguntasNivel.length) {
+                    const porcentagem = Math.round((pontuacao / perguntasNivel.length) * 100);
+                    mostrarJogo(`
+                        <h2>🎉 Quiz Finalizado!</h2>
+                        <div class="jogo-content-area">
+                            <h3>Nível: ${nivel.charAt(0).toUpperCase() + nivel.slice(1)}</h3>
+                            <h3>Sua pontuação: ${pontuacao}/${perguntasNivel.length} (${porcentagem}%)</h3>
+                            <p style="font-size: 1.2em; margin: 20px 0;">
+                                ${porcentagem >= 80 ? "Excelente conhecimento bíblico! 🌟" : 
+                                  porcentagem >= 60 ? "Bom trabalho! Continue estudando! 📖" : 
+                                  "Continue lendo a Bíblia para aprender mais! 💪"}
+                            </p>
+                            <button class="btn-jogar" onclick="abrirQuiz()">🔄 Jogar Novamente</button>
+                        </div>
+                    `);
+                    return;
+                }
+
+                const pergunta = perguntasNivel[perguntaAtual];
+                mostrarJogo(`
+                    <h2>🧠 Quiz Bíblico - ${nivel.charAt(0).toUpperCase() + nivel.slice(1)}</h2>
+                    <div class="jogo-content-area">
+                        <p>Pergunta ${perguntaAtual + 1}/${perguntasNivel.length} | Pontuação: ${pontuacao}</p>
+                        <div class="pergunta">
+                            <h3>${pergunta.pergunta}</h3>
+                        </div>
+                        ${pergunta.opcoes.map((opcao, index) => 
+                            `<div class="opcao" onclick="responderPergunta(${index}, ${pergunta.correta})">${opcao}</div>`
+                        ).join('')}
+                    </div>
+                `);
+            }
+
+            window.responderPergunta = function(opcaoSelecionada, correta) {
+                const opcoes = document.querySelectorAll('.opcao');
+                
+                opcoes.forEach((opcao, index) => {
+                    if (index === correta) {
+                        opcao.classList.add('correta');
+                    } else if (index === opcaoSelecionada && index !== correta) {
+                        opcao.classList.add('incorreta');
+                    }
+                    opcao.style.pointerEvents = 'none';
+                });
+
+                if (opcaoSelecionada === correta) {
+                    pontuacao++;
+                }
+
+                setTimeout(() => {
+                    perguntaAtual++;
+                    mostrarPergunta();
+                }, 2000);
+            };
+
+            mostrarPergunta();
+        }
+
+        // JOGO DA MEMÓRIA
+        function abrirMemoria() {
+            mostrarJogo(`
+                <h2>🧩 Jogo da Memória</h2>
+                <div class="jogo-content-area">
+                    <h3>Escolha o nível de dificuldade:</h3>
+                    <button class="difficulty-btn facil" onclick="iniciarMemoria('facil')">😊 Fácil (6 pares)</button>
+                    <button class="difficulty-btn medio" onclick="iniciarMemoria('medio')">�� Médio (8 pares)</button>
+                    <button class="difficulty-btn dificil" onclick="iniciarMemoria('dificil')">😰 Difícil (12 pares)</button>
+                </div>
+            `);
+        }
+
+        function iniciarMemoria(nivel) {
+            const personagens = {
+                facil: [
+                    { id: 1, emoji: "🚢", nome: "Noé" },
+                    { id: 2, emoji: "📜", nome: "Moisés" },
+                    { id: 3, emoji: "👑", nome: "Davi" },
+                    { id: 4, emoji: "✝️", nome: "Jesus" },
+                    { id: 5, emoji: "👼", nome: "Maria" },
+                    { id: 6, emoji: "🔨", nome: "José" }
+                ],
+                medio: [
+                    { id: 1, emoji: "🚢", nome: "Noé" },
+                    { id: 2, emoji: "📜", nome: "Moisés" },
+                    { id: 3, emoji: "👑", nome: "Davi" },
+                    { id: 4, emoji: "✝️", nome: "Jesus" },
+                    { id: 5, emoji: "👼", nome: "Maria" },
+                    { id: 6, emoji: "🔨", nome: "José" },
+                    { id: 7, emoji: "🎣", nome: "Pedro" },
+                    { id: 8, emoji: "✉️", nome: "Paulo" }
+                ],
+                dificil: [
+                    { id: 1, emoji: "🚢", nome: "Noé" },
+                    { id: 2, emoji: "📜", nome: "Moisés" },
+                    { id: 3, emoji: "👑", nome: "Davi" },
+                    { id: 4, emoji: "✝️", nome: "Jesus" },
+                    { id: 5, emoji: "👼", nome: "Maria" },
+                    { id: 6, emoji: "🔨", nome: "José" },
+                    { id: 7, emoji: "🎣", nome: "Pedro" },
+                    { id: 8, emoji: "✉️", nome: "Paulo" },
+                    { id: 9, emoji: "📖", nome: "João" },
+                    { id: 10, emoji: "⭐", nome: "Abraão" },
+                    { id: 11, emoji: "🔥", nome: "Elias" },
+                    { id: 12, emoji: "🦁", nome: "Daniel" }
+                ]
+            };
+
+            const cartas = personagens[nivel];
+            const cartasJogo = [...cartas, ...cartas].sort(() => Math.random() - 0.5);
+            let cartasViradas = [];
+            let paresEncontrados = 0;
+            let tentativas = 0;
+
+            function mostrarMemoria() {
+                mostrarJogo(`
+                    <h2>🧩 Jogo da Memória - ${nivel.charAt(0).toUpperCase() + nivel.slice(1)}</h2>
+                    <div class="jogo-content-area">
+                        <div class="memory-stats">
+                            <div>Pares: <span id="pares-contador">${paresEncontrados}</span>/${cartas.length}</div>
+                            <div>Tentativas: <span id="tentativas-contador">${tentativas}</span></div>
+                        </div>
+                        <div class="memory-grid ${nivel}">
+                            ${cartasJogo.map((carta, index) => 
+                                `<div class="memory-card" id="carta-${index}" onclick="virarCarta(${index})">${index + 1}</div>`
+                            ).join('')}
+                        </div>
+                        <button class="btn-jogar" onclick="abrirMemoria()">🔄 Novo Jogo</button>
+                    </div>
+                `);
+            }
+
+            window.virarCarta = function(index) {
+                const carta = document.getElementById(`carta-${index}`);
+                
+                if (carta.classList.contains('flipped') || carta.classList.contains('matched') || cartasViradas.length >= 2) {
+                    return;
+                }
+
+                carta.classList.add('flipped');
+                carta.innerHTML = cartasJogo[index].emoji;
+                cartasViradas.push({element: carta, index: index, id: cartasJogo[index].id});
+
+                if (cartasViradas.length === 2) {
+                    tentativas++;
+                    document.getElementById('tentativas-contador').textContent = tentativas;
+                    
+                    setTimeout(() => {
+                        const [carta1, carta2] = cartasViradas;
+                        
+                        if (carta1.id === carta2.id) {
+                            carta1.element.classList.add('matched');
+                            carta2.element.classList.add('matched');
+                            paresEncontrados++;
+                            document.getElementById('pares-contador').textContent = paresEncontrados;
+                            
+                            if (paresEncontrados === cartas.length) {
+                                setTimeout(() => {
+                                    alert(`🎉 Parabéns! Você encontrou todos os pares em ${tentativas} tentativas!`);
+                                }, 500);
+                            }
+                        } else {
+                            carta1.element.classList.remove('flipped');
+                            carta1.element.innerHTML = carta1.index + 1;
+                            carta2.element.classList.remove('flipped');
+                            carta2.element.innerHTML = carta2.index + 1;
+                        }
+                        
+                        cartasViradas = [];
+                    }, 1000);
+                }
+            };
+
+            mostrarMemoria();
+        }
+
+        // FORCA BÍBLICA
+        function abrirForca() {
+            mostrarJogo(`
+                <h2>🎪 Forca Bíblica</h2>
+                <div class="jogo-content-area">
+                    <h3>Escolha o nível de dificuldade:</h3>
+                    <button class="difficulty-btn facil" onclick="iniciarForca('facil')">😊 Fácil</button>
+                    <button class="difficulty-btn medio" onclick="iniciarForca('medio')">🤔 Médio</button>
+                    <button class="difficulty-btn dificil" onclick="iniciarForca('dificil')">�� Difícil</button>
+                </div>
+            `);
+        }
+
+        function iniciarForca(nivel) {
+            const palavras = {
+                facil: [
+                    { palavra: "JESUS", dica: "Filho de Deus" },
+                    { palavra: "DEUS", dica: "Criador do universo" },
+                    { palavra: "AMOR", dica: "Sentimento divino" },
+                    { palavra: "PAZ", dica: "Ausência de guerra" },
+                    { palavra: "FE", dica: "Crença em Deus" }
+                ],
+                medio: [
+                    { palavra: "BIBLIA", dica: "Livro sagrado" },
+                    { palavra: "SALVACAO", dica: "Libertação do pecado" },
+                    { palavra: "GRACA", dica: "Favor imerecido de Deus" },
+                    { palavra: "ESPERANCA", dica: "Confiança no futuro" },
+                    { palavra: "ORACAO", dica: "Conversa com Deus" }
+                ],
+                dificil: [
+                    { palavra: "RESSURREICAO", dica: "Jesus venceu a morte" },
+                    { palavra: "SANTIFICACAO", dica: "Processo de purificação" },
+                    { palavra: "JUSTIFICACAO", dica: "Declaração de justiça" },
+                    { palavra: "REGENERACAO", dica: "Novo nascimento" },
+                    { palavra: "GLORIFICACAO", dica: "Estado final dos salvos" }
+                ]
+            };
+
+            const palavrasNivel = palavras[nivel];
+            const palavraObj = palavrasNivel[Math.floor(Math.random() * palavrasNivel.length)];
+            const palavraSecreta = palavraObj.palavra;
+            let palavraAdivinhada = Array(palavraSecreta.length).fill('_');
+            let letrasUsadas = [];
+            let erros = 0;
+            const maxErros = 6;
+
+            const desenhosForca = [
+                '  +---+\n  |   |\n      |\n      |\n      |\n      |\n=========',
+                '  +---+\n  |   |\n  O   |\n      |\n      |\n      |\n=========',
+                '  +---+\n  |   |\n  O   |\n  |   |\n      |\n      |\n=========',
+                '  +---+\n  |   |\n  O   |\n /|   |\n      |\n      |\n=========',
+                '  +---+\n  |   |\n  O   |\n /|\  |\n      |\n      |\n=========',
+                '  +---+\n  |   |\n  O   |\n /|\  |\n /    |\n      |\n=========',
+                '  +---+\n  |   |\n  X   |\n /|\  |\n / \  |\n      |\n========='
+            ];
+
+            function mostrarForca() {
+                const alfabeto = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+                const jogoPerdido = (erros >= maxErros);
+                const jogoGanho = (!palavraAdivinhada.includes('_'));
+                const jogoFinalizado = jogoPerdido || jogoGanho;
+                
+                mostrarJogo(`
+                    <h2>🎪 Forca Bíblica - ${nivel.charAt(0).toUpperCase() + nivel.slice(1)}</h2>
+                    <div class="forca-container">
+                        <pre class="forca-desenho ${jogoPerdido ? 'game-over' : ''}">${desenhosForca[erros]}</pre>
+                        <div class="forca-dica">💡 Dica: ${palavraObj.dica}</div>
+                        <div class="forca-palavra">${palavraAdivinhada.join(' ')}</div>
+                        <div class="forca-info">
+                            <div>Letras usadas: ${letrasUsadas.join(', ')}</div>
+                            <div style="color: ${erros >= (maxErros - 2) ? '#dc3545' : '#28a745'}; font-weight: bold;">Erros: ${erros}/${maxErros}</div>
+                        </div>
+                        ${!jogoFinalizado ? `
+                        <div class="alfabeto-container">
+                            ${alfabeto.map(letra => 
+                                `<button class="letra-btn" onclick="tentarLetra('${letra}')" ${letrasUsadas.includes(letra) ? 'disabled' : ''}>${letra}</button>`
+                            ).join('')}
+                        </div>` : ''}
+                        ${jogoFinalizado ? `<p style="font-size:1.3em; margin-top:20px;">${jogoGanho ? '🎉 VOCÊ GANHOU!' : '💀 VOCÊ PERDEU!'}</p>` : ''}
+                        <button class="btn-jogar" onclick="abrirForca()">🔄 Nova Palavra</button>
+                    </div>
+                `);
+            }
+
+            window.tentarLetra = function(letra) {
+                if (letrasUsadas.includes(letra) || erros >= maxErros || !palavraAdivinhada.includes('_')) return;
+
+                letrasUsadas.push(letra);
+
+                if (palavraSecreta.includes(letra)) {
+                    for (let i = 0; i < palavraSecreta.length; i++) {
+                        if (palavraSecreta[i] === letra) {
+                            palavraAdivinhada[i] = letra;
+                        }
+                    }
+
+                    if (!palavraAdivinhada.includes('_')) {
+                        setTimeout(() => {
+                            alert(`🎉 Parabéns! Você acertou: ${palavraSecreta}\n💡 ${palavraObj.dica}`);
+                            mostrarForca();
+                        }, 100);
+                        return;
+                    }
+                } else {
+                    erros++;
+                    if (erros >= maxErros) {
+                        setTimeout(() => {
+                            alert(`💀 Você foi enforcado! A palavra era: ${palavraSecreta}\n💡 ${palavraObj.dica}`);
+                            mostrarForca();
+                        }, 100);
+                        return;
+                    }
+                }
+
+                mostrarForca();
+            };
+
+            mostrarForca();
+        }
+    </script>
+</body>
+</html>
