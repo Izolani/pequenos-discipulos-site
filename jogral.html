@@ -1,0 +1,636 @@
+// Sistema de áudio para Louvor Infantil
+class LouvorPlayer {
+    constructor() {
+        this.musicaAtual = null;
+        this.tocando = false;
+        this.volume = 0.7;
+        this.velocidade = 1;
+        this.playlist = [];
+        this.indiceAtual = 0;
+        this.modoKaraoke = false;
+        this.tempoAtual = 0;
+        this.duracao = 0;
+        
+        this.init();
+    }
+    
+    init() {
+        console.log('🎵 Sistema de Louvor inicializado');
+        this.criarAudioContext();
+        this.configurarEventos();
+    }
+    
+    criarAudioContext() {
+        // Criar contexto de áudio para efeitos
+        try {
+            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            console.log('🎧 Contexto de áudio criado');
+        } catch (error) {
+            console.warn('⚠️ Contexto de áudio não suportado:', error);
+        }
+    }
+    
+    configurarEventos() {
+        // Event listeners para controles
+        document.addEventListener('DOMContentLoaded', () => {
+            this.atualizarInterface();
+        });
+    }
+    
+    selecionarMusica(musicaId) {
+        console.log('�� Selecionando música:', musicaId);
+        
+        if (!musicasData[musicaId]) {
+            console.error('❌ Música não encontrada:', musicaId);
+            return;
+        }
+        
+        this.musicaAtual = musicasData[musicaId];
+        this.indiceAtual = Object.keys(musicasData).indexOf(musicaId);
+        
+        // Atualizar interface
+        document.getElementById('musica-atual').textContent = this.musicaAtual.titulo;
+        document.getElementById('artista-atual').textContent = this.musicaAtual.artista;
+        document.getElementById('tempo-total').textContent = this.musicaAtual.duracao;
+        document.querySelector('.album-placeholder').textContent = this.musicaAtual.icon;
+        
+        // Reset do player
+        this.tempoAtual = 0;
+        this.atualizarProgresso();
+        
+        console.log('✅ Música selecionada:', this.musicaAtual.titulo);
+    }
+    
+    tocarMusica(musicaId) {
+        this.selecionarMusica(musicaId);
+        this.togglePlayPause();
+    }
+    
+    togglePlayPause() {
+        if (!this.musicaAtual) {
+            this.mostrarAlerta('Selecione uma música primeiro!', 'info');
+            return;
+        }
+        
+        this.tocando = !this.tocando;
+        
+        const btnPlayPause = document.getElementById('btn-play-pause');
+        const btnPlayMain = document.getElementById('btn-play-main');
+        
+        if (this.tocando) {
+            btnPlayPause.textContent = '⏸️';
+            btnPlayMain.textContent = '⏸️';
+            console.log('▶️ Reproduzindo:', this.musicaAtual.titulo);
+            this.simularReproducao();
+            this.mostrarNotificacao(`Tocando: ${this.musicaAtual.titulo}`);
+        } else {
+            btnPlayPause.textContent = '▶️';
+            btnPlayMain.textContent = '▶️';
+            console.log('⏸️ Pausado');
+            this.mostrarNotificacao('Música pausada');
+        }
+        
+        this.atualizarInterface();
+    }
+    
+    simularReproducao() {
+        if (!this.tocando || !this.musicaAtual) return;
+        
+        const duracao = this.converterDuracaoParaSegundos(this.musicaAtual.duracao);
+        
+        this.intervaloReproducao = setInterval(() => {
+            if (!this.tocando) {
+                clearInterval(this.intervaloReproducao);
+                return;
+            }
+            
+            this.tempoAtual += this.velocidade;
+            this.atualizarProgresso();
+            
+            if (this.tempoAtual >= duracao) {
+                this.finalizarMusica();
+            }
+        }, 1000);
+    }
+    
+    finalizarMusica() {
+        clearInterval(this.intervaloReproducao);
+        this.tocando = false;
+        this.tempoAtual = 0;
+        
+        // Reset dos botões
+        document.getElementById('btn-play-pause').textContent = '▶️';
+        document.getElementById('btn-play-main').textContent = '▶️';
+        
+        this.atualizarProgresso();
+        this.mostrarNotificacao('Música finalizada');
+        
+        console.log('🏁 Música finalizada');
+        
+        // Auto-play próxima música (opcional)
+        setTimeout(() => {
+            this.proximaMusica();
+        }, 1000);
+    }
+    
+    musicaAnterior() {
+        const musicas = Object.keys(musicasData);
+        if (musicas.length === 0) return;
+        
+        this.indiceAtual = this.indiceAtual > 0 ? this.indiceAtual - 1 : musicas.length - 1;
+        const novaMusica = musicas[this.indiceAtual];
+        
+        this.tocarMusica(novaMusica);
+        console.log('⏮️ Música anterior:', novaMusica);
+    }
+    
+    proximaMusica() {
+        const musicas = Object.keys(musicasData);
+        if (musicas.length === 0) return;
+        
+        this.indiceAtual = this.indiceAtual < musicas.length - 1 ? this.indiceAtual + 1 : 0;
+        const novaMusica = musicas[this.indiceAtual];
+        
+        this.tocarMusica(novaMusica);
+        console.log('⏭️ Próxima música:', novaMusica);
+    }
+    
+    abrirKaraoke() {
+        if (!this.musicaAtual) {
+            this.mostrarAlerta('Selecione uma música primeiro!', 'warning');
+            return;
+        }
+        
+        this.modoKaraoke = !this.modoKaraoke;
+        
+        if (this.modoKaraoke) {
+            this.mostrarModalKaraoke();
+        } else {
+            this.fecharModalKaraoke();
+        }
+    }
+    
+    mostrarModalKaraoke() {
+        const modalHTML = `
+            <div id="modal-karaoke" class="modal-karaoke">
+                <div class="modal-content-karaoke">
+                    <div class="karaoke-header">
+                        <h2>🎤 Modo Karaokê</h2>
+                        <button onclick="louvorPlayer.fecharModalKaraoke()">❌</button>
+                    </div>
+                    <div class="karaoke-body">
+                        <div class="musica-info-karaoke">
+                            <h3>${this.musicaAtual.titulo}</h3>
+                            <p>${this.musicaAtual.artista}</p>
+                        </div>
+                        <div class="letra-karaoke">
+                            <div class="letra-linha ativa">🎵 A letra apareceria aqui sincronizada</div>
+                            <div class="letra-linha">🎵 Com destaque na linha atual</div>
+                            <div class="letra-linha">🎵 Perfeito para cantar junto!</div>
+                        </div>
+                        <div class="karaoke-controles">
+                            <button onclick="louvorPlayer.togglePlayPause()">
+                                ${this.tocando ? '⏸️' : '▶️'} ${this.tocando ? 'Pausar' : 'Tocar'}
+                            </button>
+                            <button onclick="louvorPlayer.ajustarTom(-1)">🔽 Tom</button>
+                            <button onclick="louvorPlayer.ajustarTom(1)">🔼 Tom</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+        console.log('🎤 Modal karaokê aberto');
+    }
+    
+    fecharModalKaraoke() {
+        const modal = document.getElementById('modal-karaoke');
+        if (modal) {
+            modal.remove();
+            this.modoKaraoke = false;
+            console.log('🎤 Modal karaokê fechado');
+        }
+    }
+    
+    buscarTempo(event) {
+        if (!this.musicaAtual) return;
+        
+        const progressBar = event.currentTarget;
+        const rect = progressBar.getBoundingClientRect();
+        const clickX = event.clientX - rect.left;
+        const percentage = (clickX / rect.width) * 100;
+        
+        const duracao = this.converterDuracaoParaSegundos(this.musicaAtual.duracao);
+        this.tempoAtual = (percentage / 100) * duracao;
+        
+        this.atualizarProgresso();
+        console.log('⏯️ Tempo alterado para:', this.formatarTempo(this.tempoAtual));
+    }
+    
+    atualizarProgresso() {
+        if (!this.musicaAtual) return;
+        
+        const duracao = this.converterDuracaoParaSegundos(this.musicaAtual.duracao);
+        const percentage = (this.tempoAtual / duracao) * 100;
+        
+        // Atualizar barra de progresso
+        const progress = document.getElementById('progress-main');
+        if (progress) {
+            progress.style.width = Math.min(percentage, 100) + '%';
+        }
+        
+        // Atualizar tempo atual
+        const tempoAtualElement = document.getElementById('tempo-atual');
+        if (tempoAtualElement) {
+            tempoAtualElement.textContent = this.formatarTempo(this.tempoAtual);
+        }
+    }
+    
+    converterDuracaoParaSegundos(duracao) {
+        const partes = duracao.split(':');
+        return parseInt(partes[0]) * 60 + parseInt(partes[1]);
+    }
+    
+    formatarTempo(segundos) {
+        const minutos = Math.floor(segundos / 60);
+        const segs = Math.floor(segundos % 60);
+        return `${minutos}:${segs.toString().padStart(2, '0')}`;
+    }
+    
+    ajustarTom(direcao) {
+        console.log('🎵 Ajustando tom:', direcao > 0 ? 'Subindo' : 'Descendo');
+        this.mostrarNotificacao(`Tom ${direcao > 0 ? 'aumentado' : 'diminuído'}`);
+    }
+    
+    mostrarNotificacao(mensagem) {
+        // Criar notificação temporária
+        const notificacao = document.createElement('div');
+        notificacao.className = 'notificacao-louvor';
+        notificacao.textContent = mensagem;
+        notificacao.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4CAF50;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+        `;
+        
+        document.body.appendChild(notificacao);
+        
+        setTimeout(() => {
+            notificacao.style.animation = 'slideOut 0.3s ease-out';
+            setTimeout(() => notificacao.remove(), 300);
+        }, 2000);
+    }
+    
+    mostrarAlerta(mensagem, tipo = 'info') {
+        const icones = {
+            info: 'ℹ️',
+            warning: '⚠️',
+            error: '❌',
+            success: '✅'
+        };
+        
+        const cores = {
+            info: '#2196F3',
+            warning: '#FF9800',
+            error: '#F44336',
+            success: '#4CAF50'
+        };
+        
+        const alerta = document.createElement('div');
+        alerta.innerHTML = `
+            <div style="
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: white;
+                padding: 30px;
+                border-radius: 15px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                z-index: 1001;
+                text-align: center;
+                max-width: 400px;
+                border-left: 5px solid ${cores[tipo]};
+            ">
+                <div style="font-size: 2rem; margin-bottom: 15px;">${icones[tipo]}</div>
+                <p style="margin: 0; color: #333; font-size: 1.1rem;">${mensagem}</p>
+                <button onclick="this.parentElement.parentElement.remove()" style="
+                    background: ${cores[tipo]};
+                    color: white;
+                    border: none;
+                    padding: 10px 20px;
+                    border-radius: 20px;
+                    margin-top: 20px;
+                    cursor: pointer;
+                    font-family: 'Comic Neue', cursive;
+                ">OK</button>
+            </div>
+        `;
+        
+        document.body.appendChild(alerta);
+        
+        // Auto-remover após 5 segundos
+        setTimeout(() => {
+            if (alerta.parentElement) {
+                alerta.remove();
+            }
+        }, 5000);
+    }
+    
+    atualizarInterface() {
+        // Atualizar estado dos botões e interface
+        const btnKaraoke = document.getElementById('btn-karaoke');
+        if (btnKaraoke) {
+            btnKaraoke.style.background = this.modoKaraoke ? '#FF6347' : '#2E8B57';
+        }
+    }
+}
+
+// Dados das músicas (expandido)
+const musicasData = {
+    'jesus-me-ama': {
+        titulo: 'Jesus Me Ama',
+        artista: 'Ministério Infantil',
+        duracao: '2:30',
+        icon: '❤️',
+        letra: [
+            'Jesus me ama, disso eu sei',
+            'A Bíblia assim me ensinou',
+            'Pequeninos como eu',
+            'Ele nos ama porque nos criou'
+        ]
+    },
+    'meu-deus-grande': {
+        titulo: 'Meu Deus é Grande',
+        artista: 'Ministério Infantil',
+        duracao: '3:15',
+        icon: '🌟',
+        letra: [
+            'Meu Deus é grande, forte e poderoso',
+            'Meu Deus é grande, Ele é vitorioso',
+            'Meu Deus é grande, maior que os problemas',
+            'Meu Deus é grande, maior que os gigantes'
+        ]
+    },
+    'aleluia-criancas': {
+        titulo: 'Aleluia das Crianças',
+        artista: 'Ministério Infantil',
+        duracao: '2:45',
+        icon: '🙌',
+        letra: [
+            'Aleluia, aleluia, aleluia, aleluia',
+            'Louvamos ao Senhor',
+            'Aleluia, aleluia, aleluia, aleluia',
+            'Com todo o coração'
+        ]
+    },
+    'pai-nosso': {
+        titulo: 'Pai Nosso Infantil',
+        artista: 'Ministério Infantil',
+        duracao: '3:00',
+        icon: '🙏',
+        letra: [
+            'Pai nosso que estás nos céus',
+            'Santificado seja o teu nome',
+            'Venha o teu reino',
+            'Seja feita a tua vontade'
+        ]
+    },
+    'biblia-livro': {
+        titulo: 'A Bíblia é o Livro',
+        artista: 'Ministério Infantil',
+        duracao: '2:20',
+        icon: '📖',
+        letra: [
+            'A Bíblia é o livro que nos ensina',
+            'Como viver para Jesus',
+            'A Bíblia é o livro da verdade',
+            'Que nos mostra o caminho da luz'
+        ]
+    },
+    'jesus-amigo': {
+        titulo: 'Jesus é Meu Amigo',
+        artista: 'Ministério Infantil',
+        duracao: '2:50',
+        icon: '👫',
+        letra: [
+            'Jesus é meu amigo querido',
+            'Ele nunca me deixará',
+            'Jesus é meu amigo fiel',
+            'Para sempre me amará'
+        ]
+    }
+};
+
+// Instância global do player
+let louvorPlayer;
+
+// Funções globais para compatibilidade
+function selecionarMusica(musicaId) {
+    louvorPlayer.selecionarMusica(musicaId);
+}
+
+function tocarMusica(musicaId) {
+    louvorPlayer.tocarMusica(musicaId);
+}
+
+function togglePlayPause() {
+    louvorPlayer.togglePlayPause();
+}
+
+function musicaAnterior() {
+    louvorPlayer.musicaAnterior();
+}
+
+function proximaMusica() {
+    louvorPlayer.proximaMusica();
+}
+
+function abrirKaraoke() {
+    louvorPlayer.abrirKaraoke();
+}
+
+function modoKaraoke(musicaId) {
+    louvorPlayer.selecionarMusica(musicaId);
+    louvorPlayer.abrirKaraoke();
+}
+
+function buscarTempo(event) {
+    louvorPlayer.buscarTempo(event);
+}
+
+// Inicialização
+document.addEventListener('DOMContentLoaded', function() {
+    louvorPlayer = new LouvorPlayer();
+    console.log('🎵 Louvor Infantil - Igreja Cristo Vive carregado!');
+});
+
+// Estilos CSS para as notificações e modal karaokê
+const estilosLouvor = `
+<style>
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+}
+
+.modal-karaoke {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content-karaoke {
+    background: linear-gradient(135deg, #2E8B57, #4CAF50);
+    border-radius: 20px;
+    max-width: 800px;
+    width: 90%;
+    color: white;
+    overflow: hidden;
+}
+
+.karaoke-header {
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+
+.karaoke-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.karaoke-header button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    transition: background 0.3s;
+}
+
+.karaoke-header button:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.karaoke-body {
+    padding: 30px;
+}
+
+.musica-info-karaoke {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.musica-info-karaoke h3 {
+    font-size: 1.8rem;
+    margin: 0 0 10px 0;
+}
+
+.musica-info-karaoke p {
+    font-size: 1.1rem;
+    opacity: 0.8;
+    margin: 0;
+}
+
+.letra-karaoke {
+    background: rgba(255,255,255,0.1);
+    border-radius: 15px;
+    padding: 30px;
+    margin-bottom: 30px;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.letra-linha {
+    font-size: 1.5rem;
+    text-align: center;
+    margin: 10px 0;
+    opacity: 0.6;
+    transition: all 0.3s ease;
+}
+
+.letra-linha.ativa {
+    opacity: 1;
+    font-size: 1.8rem;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    transform: scale(1.1);
+}
+
+.karaoke-controles {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.karaoke-controles button {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-family: 'Comic Neue', cursive;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.karaoke-controles button:hover {
+    background: rgba(255,255,255,0.3);
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    .modal-content-karaoke {
+        width: 95%;
+        margin: 20px;
+    }
+    
+    .karaoke-body {
+        padding: 20px;
+    }
+    
+    .letra-linha {
+        font-size: 1.2rem;
+    }
+    
+    .letra-linha.ativa {
+        font-size: 1.4rem;
+    }
+    
+    .karaoke-controles {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+</style>
+`;
+
+// Adicionar estilos ao documento
+document.head.insertAdjacentHTML('beforeend', estilosLouvor);
