@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forca Bíblica - Pequenos Discípulos</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/animations.css">
+    <link rel="stylesheet" href="../css/games.css">
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo-header">
+                <img src="../assets/images/logo-pequenos-discipulos.png" alt="Pequenos Discípulos" onerror="this.style.display='none'">
+                <h1>Forca Bíblica</h1>
+            </div>
+            <div class="game-controls">
+                <button class="btn-voltar" onclick="window.location.href='jogos.html'">
+                    ⬅️ Voltar
+                </button>
+                <button class="btn-novo-jogo" onclick="novoJogo()">
+                    🔄 Novo Jogo
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Conteúdo do Jogo -->
+    <main class="game-main">
+        <div class="container">
+            <!-- Área do Jogo -->
+            <div class="forca-container">
+                <!-- Desenho da Forca -->
+                <div class="forca-drawing">
+                    <svg width="200" height="250" class="forca-svg">
+                        <!-- Base -->
+                        <line x1="10" y1="230" x2="150" y2="230" stroke="#8B4513" stroke-width="8"/>
+                        <!-- Poste vertical -->
+                        <line x1="30" y1="230" x2="30" y2="20" stroke="#8B4513" stroke-width="8"/>
+                        <!-- Trave horizontal -->
+                        <line x1="30" y1="20" x2="120" y2="20" stroke="#8B4513" stroke-width="8"/>
+                        <!-- Corda -->
+                        <line x1="120" y1="20" x2="120" y2="50" stroke="#654321" stroke-width="4"/>
+                        
+                        <!-- Partes do boneco (inicialmente ocultas) -->
+                        <!-- Cabeça -->
+                        <circle cx="120" cy="70" r="20" stroke="#000" stroke-width="3" fill="none" class="parte-corpo" id="cabeca" style="display: none;"/>
+                        <!-- Corpo -->
+                        <line x1="120" y1="90" x2="120" y2="160" stroke="#000" stroke-width="3" class="parte-corpo" id="corpo" style="display: none;"/>
+                        <!-- Braço esquerdo -->
+                        <line x1="120" y1="110" x2="90" y2="140" stroke="#000" stroke-width="3" class="parte-corpo" id="braco-esq" style="display: none;"/>
+                        <!-- Braço direito -->
+                        <line x1="120" y1="110" x2="150" y2="140" stroke="#000" stroke-width="3" class="parte-corpo" id="braco-dir" style="display: none;"/>
+                        <!-- Perna esquerda -->
+                        <line x1="120" y1="160" x2="90" y2="190" stroke="#000" stroke-width="3" class="parte-corpo" id="perna-esq" style="display: none;"/>
+                        <!-- Perna direita -->
+                        <line x1="120" y1="160" x2="150" y2="190" stroke="#000" stroke-width="3" class="parte-corpo" id="perna-dir" style="display: none;"/>
+                    </svg>
+                </div>
+
+                <!-- Área da Palavra -->
+                <div class="palavra-area">
+                    <div class="categoria-hint">
+                        <h3>Categoria: <span id="categoria">Carregando...</span></h3>
+                        <p class="dica">💡 Dica: <span id="dica">Carregando...</span></p>
+                    </div>
+                    
+                    <div class="palavra-display" id="palavra-display">
+                        <!-- Letras serão inseridas aqui dinamicamente -->
+                    </div>
+                    
+                    <div class="game-stats">
+                        <div class="stat">
+                            <span class="stat-label">Erros:</span>
+                            <span class="stat-value" id="erros">0</span>/<span id="max-erros-display">6</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Pontos:</span>
+                            <span class="stat-value" id="pontos">0</span>
+                        </div>
+                    </div>
+
+                    <!-- Informações do Nível -->
+                    <div class="nivel-info">
+                        <div class="nivel-atual" id="nivel-atual">🟢 Fácil</div>
+                        <div class="max-erros">Máximo de erros: <span id="max-erros">8</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Teclado Virtual -->
+            <div class="teclado-virtual">
+                <h4>Escolha uma letra:</h4>
+                <div class="teclado-grid" id="teclado">
+                    <!-- Letras serão inseridas dinamicamente -->
+                </div>
+            </div>
+
+            <!-- Letras Erradas -->
+            <div class="letras-erradas">
+                <h4>Letras que não estão na palavra:</h4>
+                <div class="letras-erradas-display" id="letras-erradas">
+                    <!-- Letras erradas aparecerão aqui -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal de Resultado -->
+    <div id="modal-resultado" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="resultado-titulo">Parabéns!</h2>
+                <div class="resultado-emoji" id="resultado-emoji">🎉</div>
+            </div>
+            <div class="modal-body">
+                <p id="resultado-mensagem">Você descobriu a palavra!</p>
+                <div class="palavra-revelada">
+                    A palavra era: <strong id="palavra-final"></strong>
+                </div>
+                <div class="pontuacao-final">
+                    Sua pontuação: <strong id="pontuacao-final">0</strong> pontos
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal" onclick="novoJogo()">🔄 Jogar Novamente</button>
+                <button class="btn-modal" onclick="window.location.href='jogos.html'">🎮 Outros Jogos</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Áudios do Jogo (opcionais) -->
+    <audio id="audio-acerto" preload="auto">
+        <source src="../assets/audio/acerto.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="audio-erro" preload="auto">
+        <source src="../assets/audio/erro.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="audio-vitoria" preload="auto">
+        <source src="../assets/audio/vitoria.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="audio-derrota" preload="auto">
+        <source src="../assets/audio/derrota.mp3" type="audio/mpeg">
+    </audio>
+
+    <script src="../js/forca.js"></script>
+</body>
+</html>
