@@ -29,8 +29,8 @@ document.addEventListener('DOMContentLoaded', function() {
     initAudioPlayer();
     rotateVersiculo();
     
-    // Rotacionar versículo a cada 10 segundos
-    setInterval(rotateVersiculo, 10000);
+    // Rotacionar versículo diariamente
+setInterval(rotateVersiculo, 24 * 60 * 60 * 1000); // 24 horas
 });
 
 // Splash Screen
@@ -129,8 +129,11 @@ function rotateVersiculo() {
     const versiculoRef = document.getElementById('versiculo-referencia');
     
     if (versiculoTexto && versiculoRef) {
-        const randomIndex = Math.floor(Math.random() * versiculos.length);
-        const versiculo = versiculos[randomIndex];
+        // Usar data para versículo do dia
+        const hoje = new Date();
+        const diaDoAno = Math.floor((hoje - new Date(hoje.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+        const versiculoIndex = diaDoAno % versiculos.length;
+        const versiculo = versiculos[versiculoIndex];
         
         // Animação de fade
         versiculoTexto.style.opacity = '0';
@@ -144,7 +147,6 @@ function rotateVersiculo() {
         }, 300);
     }
 }
-
 // Efeitos sonoros
 function playHoverSound() {
     const audio = new Audio('assets/audio/hover-sound.mp3');
@@ -186,4 +188,5 @@ style.textContent = `
         to { opacity: 1; }
     }
 `;
+
 document.head.appendChild(style);
