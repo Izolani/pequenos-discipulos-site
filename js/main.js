@@ -1,3 +1,5 @@
+// Importar versículos anuais
+// (Se estiver usando módulos, senão apenas certifique-se que o arquivo seja carregado antes)
 // Variáveis globais
 let currentAudio = null;
 let isPlaying = false;
@@ -129,25 +131,21 @@ function rotateVersiculo() {
     const versiculoRef = document.getElementById('versiculo-referencia');
     
     if (versiculoTexto && versiculoRef) {
-        // Usar data para versículo do dia
-        const hoje = new Date();
-        const diaDoAno = Math.floor((hoje - new Date(hoje.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
-        const versiculoIndex = diaDoAno % versiculos.length;
-        const versiculo = versiculos[versiculoIndex];
+        // Usar a nova função dos 365 versículos
+        const versiculoHoje = obterVersiculoDoDia();
         
         // Animação de fade
         versiculoTexto.style.opacity = '0';
         versiculoRef.style.opacity = '0';
         
         setTimeout(() => {
-            versiculoTexto.textContent = `"${versiculo.texto}"`;
-            versiculoRef.textContent = versiculo.referencia;
+            versiculoTexto.textContent = `"${versiculoHoje.texto}"`;
+            versiculoRef.textContent = versiculoHoje.referencia;
             versiculoTexto.style.opacity = '1';
             versiculoRef.style.opacity = '1';
         }, 300);
     }
-}
-// Efeitos sonoros
+}// Efeitos sonoros
 function playHoverSound() {
     const audio = new Audio('assets/audio/hover-sound.mp3');
     audio.volume = 0.1;
@@ -190,3 +188,4 @@ style.textContent = `
 `;
 
 document.head.appendChild(style);
+
